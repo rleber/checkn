@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+# Set up template
+
+print("Hello world")
+
+# Copy the template to its desired location
+# Rename module in several files
+# Prompt user to fill out README?
+# Fill in pyproject.html
+# Get rid of the .git directory
+# Do a git init
+# Do direnv_enable
