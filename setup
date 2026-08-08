@@ -5,9 +5,13 @@
 print("Hello world")
 
 # Copy the template to its desired location
-# Rename module in several files
+# Rename module in pyproject.toml, README.md
+# Rename src/module directory
 # Prompt user to fill out README?
 # Fill in pyproject.html
-# Get rid of the .git directory
+# Remove the .git directory
 # Do a git init
+# Check in .gitignore
 # Do direnv_enable
+# Check in other files in git
+# Create a develop branch
