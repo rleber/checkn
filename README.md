@@ -1,26 +1,26 @@
 <!-- TODO: Complete information -->
 
-# module
+# setup-py
 
-<!-- TODO complete -->
+Create a Python module skeleton
 
 ## Description
 
-<!-- TODO complete -->
+Tool to build a skeleton for a new Python module
 
 ## Getting Started
 
 ### Dependencies
 
-<!-- TODO complete -->
+git
 
 ### Installing
 
-<!-- TODO complete -->
+`pip install setup-py`
 
 ### Executing program
 
-<!-- TODO complete -->
+`setup-py <module name>`
 
 ## Author
 
@@ -38,6 +38,4 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 
 For options, see [license.md](https://license.md/licenses/)
 
-## Acknowledgments
 
-<!-- TODO complete -->

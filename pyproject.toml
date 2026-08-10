@@ -6,8 +6,8 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "module"
-description = "TODO complete"
+name = "setup-py"
+description = "Set up a Python library skeleton"
 authors = [
     {name="Richard LeBer", email = "richard.leber@gmail.com"}
 ]
@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.scripts] 
-module = "module:main_cli" # TODO modify as needed
+setup-py = "setup_py:main"
 
 # [project.urls] # TODO Complete or remove
 # Homepage = "url"
@@ -30,4 +30,4 @@ module = "module:main_cli" # TODO modify as needed
 # Etc. See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#urls
 
 [tool.setuptools.dynamic]
-version = {attr = "module.__version__"}
+version = {attr = "setup_py.__version__"}
