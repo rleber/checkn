@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.scripts] 
-module = "module:main_cli" # TODO complete
+module = "module:main_cli" # TODO modify as needed
 
 # [project.urls] # TODO Complete or remove
 # Homepage = "url"
@@ -30,4 +30,4 @@ module = "module:main_cli" # TODO complete
 # Etc. See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#urls
 
 [tool.setuptools.dynamic]
-version = {attr = "module.__version__"} # TODO Change this
+version = {attr = "module.__version__"}
