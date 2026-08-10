@@ -2,6 +2,6 @@
 
 __version__ = "0.0.1"
 
-# TODO Modify
+# TODO Modify as needed
 
-from .main import main_cli, main_gui
+from .module import main_cli, main_gui
