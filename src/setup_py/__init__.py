@@ -4,4 +4,4 @@ __version__ = "0.0.1"
 
 # TODO Modify
 
-from .main import main_cli, main_gui
+from .setup_py import main

@@ -2,8 +2,6 @@
 
 # Set up template
 
-# TODO add logging
-
 import argparse
 from git import Repo
 import logging
@@ -18,7 +16,7 @@ import tempfile
 
 
 PROJECT_ROOT = "~/projects/python"
-TEMPLATE_DIR = Path(__file__).resolve().parent
+TEMPLATE_DIR = Path(__file__).resolve().parent.parent.parent / "template"
 
 
 def main(args = sys.argv[1:]):
@@ -108,7 +106,8 @@ EXCLUDED_COPY_FILES = [
     "tests",
     "src",
     "module.py",
-    ".git"
+    ".git",
+    ".gitignore",
 ]
 
 def build_project_dir(project_dir: Path, module: str, existing_files: Path | None) -> None:
@@ -160,6 +159,7 @@ EDIT_FILES = [
 
 def edit_files(project_dir: Path, module: str):
     files_to_edit = EDIT_FILES.copy()
+    files_to_edit.append(f"src/{module}/__init__.py")
     files_to_edit.append(f"src/{module}/{module}.py")
     for file in files_to_edit:
         target_file = project_dir / file
