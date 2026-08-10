@@ -16,7 +16,7 @@ import tempfile
 
 
 PROJECT_ROOT = "~/projects/python"
-TEMPLATE_DIR = Path(__file__).resolve().parent
+TEMPLATE_DIR = Path(__file__).resolve().parent.parent.parent / "template"
 
 
 def main(args = sys.argv[1:]):
