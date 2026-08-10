@@ -2,8 +2,6 @@
 
 # Set up template
 
-# TODO add logging
-
 import argparse
 from git import Repo
 import logging
