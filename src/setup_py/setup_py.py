@@ -2,6 +2,11 @@
 
 # Set up template
 
+# TODO Rename this library as setup-pip
+# TODO Fix library so it handles module names including "-"
+# TODO Integrate with ruby gem setup
+# TODO Create a gem exists shortcut like pip exists
+
 import argparse
 from git import Repo
 import logging
