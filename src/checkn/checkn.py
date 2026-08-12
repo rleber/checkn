@@ -5,6 +5,7 @@
 import argparse
 import sys
 
+import inflect
 from python_definition import PythonDefinition
 
 # TODO Should have a refresh function
@@ -13,16 +14,21 @@ from python_definition import PythonDefinition
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(
         prog="checkn",
-        description="Check if a name is a class defined in the Python standard libraries",
+        description="Check if a name is defined Python name",
     )
-    parser.add_argument("name", help="Class name")
+    parser.add_argument("name", help="Name to check")
     parsed_args = parser.parse_args(args)
     name = parsed_args.name
     definition = PythonDefinition(name)
-    module_type = definition.module_type
+    module_type = definition.basic_type
+
+    p = inflect.engine()
+
     if module_type:
-        print(f"{name} is a {module_type}")
+        print(f"{name} is {p.a(module_type)}")
     else:
+        print(f"{name} is unknown")
+        """
         class_list = definition.get_all_stdlib_classes()
         matching_modules = [cls_info for cls_info in class_list if cls_info[2] == name]
         if len(matching_modules) == 0:
@@ -36,7 +42,7 @@ def main(args=sys.argv[1:]):
             else:
                 print(
                     f"{name} is a class in the {matching_modules} modules installed by {installer}"
-                )
+                )"""
 
 
 main()
