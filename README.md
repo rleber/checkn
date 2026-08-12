@@ -1,12 +1,17 @@
 <!-- TODO: Complete information -->
 
-# py-class
+# checkn
 
-Check if a name is a defined Python standard class
+Check if a name is a defined Python name
 
 ## Description
 
-Tool to check if a name is a class in the Python standard libraries
+Tool to check if a name is defined Python name:
+- A builtin class
+- A builtin module
+- A module in the standard libraries
+- An installable library
+- An installed library on the current system
 
 ## Getting Started
 
@@ -16,11 +21,11 @@ Tool to check if a name is a class in the Python standard libraries
 
 ### Installing
 
-`pip install py-class`
+`pip install checkn`
 
 ### Executing program
 
-`py-class <name>`
+`checkn <name>`
 
 ## Author
 

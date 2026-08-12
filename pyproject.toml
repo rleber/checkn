@@ -6,8 +6,8 @@ requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "py-class"
-description = "Check if a name is a defined Python standard class"
+name = "checkn"
+description = "Check if a name is a defined Python name"
 authors = [
     {name="Richard LeBer", email = "richard.leber@gmail.com"}
 ]
@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.scripts] 
-setup-py = "py_class:main"
+setup-py = "checkn:main"
 
 # [project.urls] # TODO Complete or remove
 # Homepage = "url"
@@ -30,4 +30,4 @@ setup-py = "py_class:main"
 # Etc. See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#urls
 
 [tool.setuptools.dynamic]
-version = {attr = "py_class.__version__"}
+version = {attr = "checkn.__version__"}

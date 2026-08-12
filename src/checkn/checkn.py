@@ -12,7 +12,7 @@ from python_definition import PythonDefinition
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(
-        prog="py-class",
+        prog="checkn",
         description="Check if a name is a class defined in the Python standard libraries",
     )
     parser.add_argument("name", help="Class name")
