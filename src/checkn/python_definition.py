@@ -9,10 +9,17 @@ import inspect
 
 
 class PythonDefinition:
+    classes_cache = None
+
     @classmethod
     def builtin_classes(cls) -> list[str]:
-        classes = [name for name, _ in inspect.getmembers(builtins, inspect.isclass)]
-        return classes
+        global classes_cache
+
+        if classes_cache is None:
+            classes_cache = [
+                name for name, _ in inspect.getmembers(builtins, inspect.isclass)
+            ]
+        return classes_cache
 
     def __init__(self, name: str):
         self._name = name
