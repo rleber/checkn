@@ -1,26 +1,26 @@
 <!-- TODO: Complete information -->
 
-# setup-py
+# py-class
 
-Create a Python module skeleton
+Check if a name is a defined Python standard class
 
 ## Description
 
-Tool to build a skeleton for a new Python module
+Tool to check if a name is a class in the Python standard libraries
 
 ## Getting Started
 
 ### Dependencies
 
-git
+
 
 ### Installing
 
-`pip install setup-py`
+`pip install py-class`
 
 ### Executing program
 
-`setup-py <module name>`
+`py-class <name>`
 
 ## Author
 
