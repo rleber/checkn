@@ -5,6 +5,13 @@ sys.path.append(str(Path(__file__).resolve().parent.parent / "src" / "checkn"))
 
 from python_definition import PythonDefinition
 
+uninstalled_module = "30fcd23745efe32ce681__mypyc"
+
+
+def test_uninstalled_modules():
+    uninstalled_modules = PythonDefinition.uninstalled_modules()
+    assert uninstalled_module in uninstalled_modules
+
 
 def test_is_builtin_class():
     assert PythonDefinition("str").is_builtin_class  # str is a builtin class
@@ -14,22 +21,13 @@ def test_is_builtin_class():
     ).is_builtin_class  # collections is a stdlib module
     assert not PythonDefinition(
         "build123d"
-    ).is_builtin_class  # build123d is an installed module
-    assert not PythonDefinition("git").is_builtin_class  # git is an other module
+    ).is_builtin_class  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_builtin_class  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
         "Path"
     ).is_builtin_class  # Path is an identifier in a stdlib module # Path is an identifier in a stdlib module
-
-
-def test_is_module():
-    assert not PythonDefinition("str").is_module  # str is a builtin class
-    assert PythonDefinition("math").is_module  # math is a builtin module
-    assert PythonDefinition("collections").is_module  # collections is a stdlib module
-    assert PythonDefinition("build123d").is_module  # build123d is an installed module
-    assert PythonDefinition("git").is_module  # git is an other module
-    assert not PythonDefinition(
-        "Path"
-    ).is_module  # Path is an identifier in a stdlib module
 
 
 def test_is_builtin_module():
@@ -40,26 +38,30 @@ def test_is_builtin_module():
     ).is_builtin_module  # collections is a stdlib module
     assert not PythonDefinition(
         "build123d"
-    ).is_builtin_module  # build123d is an installed module
-    assert not PythonDefinition("git").is_builtin_module  # git is an other module
+    ).is_builtin_module  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_builtin_module  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
         "Path"
     ).is_builtin_module  # Path is an identifier in a stdlib module
 
 
-def test_is_stdlib_module():
-    assert not PythonDefinition("str").is_stdlib_module  # str is a builtin class
-    assert not PythonDefinition("math").is_stdlib_module  # math is a builtin module
+def test_is_standard_module():
+    assert not PythonDefinition("str").is_standard_module  # str is a builtin class
+    assert PythonDefinition("math").is_standard_module  # math is a builtin module
     assert PythonDefinition(
         "collections"
-    ).is_stdlib_module  # collections is a stdlib module
+    ).is_standard_module  # collections is a standard module
     assert not PythonDefinition(
         "build123d"
-    ).is_stdlib_module  # build123d is an installed module
-    assert not PythonDefinition("git").is_stdlib_module  # git is an other module
+    ).is_standard_module  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_standard_module  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
         "Path"
-    ).is_stdlib_module  # Path is an identifier in a stdlib module
+    ).is_standard_module  # Path is an identifier in a standard module
 
 
 def test_is_installed_module():
@@ -70,11 +72,96 @@ def test_is_installed_module():
     ).is_installed_module  # collections is a stdlib module
     assert PythonDefinition(
         "build123d"
-    ).is_installed_module  # build123d is an installed module
-    assert not PythonDefinition("git").is_installed_module  # git is an other module
+    ).is_installed_module  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_installed_module  # this is an installed module
     assert not PythonDefinition(
         "Path"
     ).is_installed_module  # Path is an identifier in a stdlib module
+
+
+def test_is_installable_module():
+    assert not PythonDefinition("str").is_installable_module  # str is a builtin class
+    assert not PythonDefinition(
+        "math"
+    ).is_installable_module  # math is a builtin module
+    assert PythonDefinition(
+        "collections"
+    ).is_installable_module  # collections is a standard module
+    assert PythonDefinition(
+        "build123d"
+    ).is_installable_module  # build123d is an defined module
+    assert PythonDefinition(
+        uninstalled_module
+    ).is_installable_module  # this is another installable (but uninstalled) module
+    assert not PythonDefinition(
+        "Path"
+    ).is_installable_module  # Path is an identifier in a standard module
+
+
+def test_is_module():
+    assert not PythonDefinition("str").is_module  # str is a builtin class
+    assert PythonDefinition("math").is_module  # math is a builtin module
+    assert PythonDefinition("collections").is_module  # collections is a stdlib module
+    assert PythonDefinition("build123d").is_module  # build123d is an defined module
+    assert PythonDefinition(
+        uninstalled_module
+    ).is_module  # this is another installable (but uninstalled) module
+    assert not PythonDefinition(
+        "Path"
+    ).is_module  # Path is an identifier in a stdlib module
+
+
+def test_is_builtin():
+    assert PythonDefinition("str").is_builtin  # str is a builtin class
+    assert PythonDefinition("math").is_builtin  # math is a builtin module
+    assert not PythonDefinition(
+        "collections"
+    ).is_builtin  # collections is a stdlib module
+    assert not PythonDefinition(
+        "build123d"
+    ).is_builtin  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_builtin  # this is another installable (but uninstalled) module
+    assert not PythonDefinition(
+        "Path"
+    ).is_builtin  # Path is an identifier in a stdlib module
+
+
+def test_is_stdlib_module():
+    assert not PythonDefinition("str").is_stdlib_module  # str is a builtin class
+    assert not PythonDefinition("math").is_stdlib_module  # math is a builtin module
+    assert PythonDefinition(
+        "collections"
+    ).is_stdlib_module  # collections is a stdlib module
+    assert not PythonDefinition(
+        "build123d"
+    ).is_stdlib_module  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_stdlib_module  # this is another installable (but uninstalled) module
+    assert not PythonDefinition(
+        "Path"
+    ).is_stdlib_module  # Path is an identifier in a stdlib module
+
+
+def test_is_standard():
+    assert PythonDefinition("str").is_standard  # str is a builtin class
+    assert PythonDefinition("math").is_standard  # math is a builtin module
+    assert PythonDefinition(
+        "collections"
+    ).is_standard  # collections is a standard module
+    assert not PythonDefinition(
+        "build123d"
+    ).is_standard  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_standard  # this is another installable (but uninstalled) module
+    assert not PythonDefinition(
+        "Path"
+    ).is_standard  # Path is an identifier in a standard module
 
 
 def test_is_known_module():
@@ -85,58 +172,26 @@ def test_is_known_module():
     ).is_known_module  # collections is a stdlib module
     assert PythonDefinition(
         "build123d"
-    ).is_known_module  # build123d is an installed module
-    assert not PythonDefinition("git").is_known_module  # git is an known module
+    ).is_known_module  # build123d is an defined module
+    assert PythonDefinition(
+        uninstalled_module
+    ).is_known_module  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
         "Path"
     ).is_known_module  # Path is an identifier in a stdlib module
 
 
-def test_is_add_on_module():
-    assert not PythonDefinition("str").is_add_on_module  # str is a builtin class
-    assert not PythonDefinition("math").is_add_on_module  # math is a builtin module
+def test_is_known():
+    assert PythonDefinition("str").is_known  # str is a builtin class
+    assert PythonDefinition("math").is_known  # math is a builtin module
+    assert PythonDefinition("collections").is_known  # collections is a stdlib module
+    assert PythonDefinition("build123d").is_known  # build123d is an defined module
     assert PythonDefinition(
-        "collections"
-    ).is_add_on_module  # collections is a stdlib module
-    assert PythonDefinition(
-        "build123d"
-    ).is_add_on_module  # build123d is an installed module
-    assert PythonDefinition("git").is_add_on_module  # git is an add_on module
+        uninstalled_module
+    ).is_known  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
         "Path"
-    ).is_add_on_module  # Path is an identifier in a stdlib module
-
-
-def test_is_contributed_module():
-    assert not PythonDefinition("str").is_contributed_module  # str is a builtin class
-    assert not PythonDefinition(
-        "math"
-    ).is_contributed_module  # math is a builtin module
-    assert not PythonDefinition(
-        "collections"
-    ).is_contributed_module  # collections is a stdlib module
-    assert PythonDefinition(
-        "build123d"
-    ).is_contributed_module  # build123d is an installed module
-    assert PythonDefinition("git").is_contributed_module  # git is an contributed module
-    assert not PythonDefinition(
-        "Path"
-    ).is_contributed_module  # Path is an identifier in a stdlib module
-
-
-def test_is_defined_module():
-    assert not PythonDefinition("str").is_defined_module  # str is a builtin class
-    assert PythonDefinition("math").is_defined_module  # math is a builtin module
-    assert PythonDefinition(
-        "collections"
-    ).is_defined_module  # collections is a stdlib module
-    assert PythonDefinition(
-        "build123d"
-    ).is_defined_module  # build123d is an installed module
-    assert PythonDefinition("git").is_defined_module  # git is an defined module
-    assert not PythonDefinition(
-        "Path"
-    ).is_defined_module  # Path is an identifier in a stdlib module
+    ).is_known  # Path is an identifier in a stdlib module
 
 
 def test_is_other_module():
@@ -147,8 +202,11 @@ def test_is_other_module():
     ).is_other_module  # collections is a stdlib module
     assert not PythonDefinition(
         "build123d"
-    ).is_other_module  # build123d is an installed module
-    assert PythonDefinition("git").is_other_module  # git is an other module
+    ).is_other_module  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_other_module  # this is another installable (but uninstalled) module
+    # I don't think there is an example of a known module that is "other"
     assert not PythonDefinition(
         "Path"
     ).is_other_module  # Path is an identifier in a stdlib module
@@ -158,16 +216,23 @@ def test_basic_type():
     assert PythonDefinition("str").basic_type == "builtin class"
     assert PythonDefinition("math").basic_type == "builtin module"
     assert PythonDefinition("collections").basic_type == "stdlib module"
+    assert PythonDefinition("typer").basic_type == "installed module"
     assert PythonDefinition("build123d").basic_type == "installed module"
-    assert PythonDefinition("git").basic_type == "other module"
+    assert (
+        PythonDefinition("30fcd23745efe32ce681__mypyc").basic_type
+        == "installable module"
+    )
+    # I don't think there is an example of a known module that is "other"
     assert (
         PythonDefinition("Path").basic_type is None
     )  # Path is an identifier in a stdlib module
 
 
 def test_installer():
-    # build123d => "uv"
-    # argparse => "pip"
-    # math => None
-    # Path => None
-    pass
+    assert PythonDefinition("str").installer == None
+    assert PythonDefinition("math").installer == None
+    assert PythonDefinition("collections").installer == None
+    assert PythonDefinition("typer").installer == "pip"
+    assert PythonDefinition("build123d").installer == "uv"
+    assert PythonDefinition(uninstalled_module).installer == None
+    assert PythonDefinition("Path").installer is None

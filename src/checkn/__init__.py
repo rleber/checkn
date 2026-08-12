@@ -2,4 +2,4 @@
 
 __version__ = "0.0.1"
 
-from .py_class import main
+from .checkn import main
