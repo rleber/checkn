@@ -46,7 +46,7 @@ richard.leber@gmail.com
 
 * 0.0.1
     * Initial release: Python only
-* 0.0.5
+* 1.0.0
     * Latest release: Python, Ruby, Git, Shell
 
 ## License
