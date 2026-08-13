@@ -241,3 +241,12 @@ def test_installer():
     assert PythonDefinition("build123d").installer == "uv"
     assert PythonDefinition(uninstalled_module).installer == None
     assert PythonDefinition("Path").installer is None
+
+
+def test_info():
+    assert PythonDefinition("collections").info._asdict() == {
+        "context": "python",
+        "name": "collections",
+        "definition": "stdlib module",
+        "details": {},
+    }

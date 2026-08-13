@@ -5,14 +5,18 @@ ruby_definition.py
 Check how a name is defined in common Ruby usage (if at all)
 """
 
+# TODO Check ruby reserved words: https://ruby-doc.org/core-3.1.2/doc/keywords_rdoc.html
+# TODO Check rails reserved words
+
 import subprocess
 
 import requests
 
+from checkn.base_definition import BaseDefinition
 from checkn.case_conversion import upper_camel_case
 
 
-class RubyDefinition:
+class RubyDefinition(BaseDefinition):
     def __init__(self, name: str):
         self._name = name
 
@@ -35,6 +39,7 @@ class RubyDefinition:
         result = subprocess.run(
             [f"ruby -e {ruby_script}"],
             shell=True,
+            check=False,
             capture_output=True,
             text=True,
         )
@@ -51,3 +56,7 @@ class RubyDefinition:
             return "builtin class"
         else:
             return None
+
+    @property
+    def info(self):
+        return BaseDefinition.Definition("ruby", self.name, self.type, {})

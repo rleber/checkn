@@ -11,7 +11,10 @@ import pkgutil
 import sys
 from importlib import metadata
 
+from checkn.base_definition import BaseDefinition
+
 # TODO Change result of type checking functions to structured data
+# TODO Add keyword checking: import keyword; keyword.kwlist
 
 
 """
@@ -22,7 +25,7 @@ defined in a importable module, using pkgutil
 """
 
 
-class PythonDefinition:
+class PythonDefinition(BaseDefinition):
     @classmethod
     def builtin_classes(cls) -> list[str]:
         classes = [name for name, _ in inspect.getmembers(builtins, inspect.isclass)]
@@ -172,3 +175,7 @@ class PythonDefinition:
             return "unknown"
         else:
             return None
+
+    @property
+    def info(self):
+        return BaseDefinition.Definition("python", self.name, self.type, {})

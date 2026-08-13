@@ -30,3 +30,12 @@ def test_type():
     assert RubyDefinition("rails").type == "gem"
     assert RubyDefinition("basic_object").type == "builtin class"
     assert RubyDefinition("BasicObject").type == "builtin class"
+
+
+def test_info():
+    assert RubyDefinition("rails").info._asdict() == {
+        "context": "ruby",
+        "name": "rails",
+        "definition": "gem",
+        "details": {},
+    }

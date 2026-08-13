@@ -11,22 +11,23 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "src" / "checkn"))
 
-from ruby_definition import RubyDefinition
+from git_definition import GitDefinition
 
 
-def test_is_gem():
-    assert RubyDefinition("rails").is_gem
-    assert not RubyDefinition("basic_object").is_gem
-    assert not RubyDefinition("BasicObject").is_gem
-
-
-def test_is_builtin_class():
-    assert not RubyDefinition("rails").is_builtin_class
-    assert RubyDefinition("basic_object").is_builtin_class
-    assert RubyDefinition("BasicObject").is_builtin_class
+def test_is_repository():
+    assert not GitDefinition("foo").is_repository
+    assert GitDefinition("checkn").is_repository
 
 
 def test_type():
-    assert RubyDefinition("rails").type == "gem"
-    assert RubyDefinition("basic_object").type == "builtin class"
-    assert RubyDefinition("BasicObject").type == "builtin class"
+    assert GitDefinition("foo").type is None
+    assert GitDefinition("checkn").type == "repository"
+
+
+def test_info():
+    assert GitDefinition("checkn").info._asdict() == {
+        "context": "git",
+        "name": "checkn",
+        "definition": "repository",
+        "details": {},
+    }

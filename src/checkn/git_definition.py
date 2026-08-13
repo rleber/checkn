@@ -12,8 +12,10 @@ Check if a name is in use as a repository on Github
 
 import subprocess
 
+from checkn.base_definition import BaseDefinition
 
-class GitDefinition:
+
+class GitDefinition(BaseDefinition):
     @classmethod
     def current_user(cls):
         result = subprocess.run(
@@ -37,6 +39,7 @@ class GitDefinition:
                 f"https://github.com/{self.current_user()}/{self.name}",
             ],
             capture_output=True,
+            check=False,
             text=True,
         )
         return result.returncode == 0
@@ -47,3 +50,7 @@ class GitDefinition:
             return "repository"
         else:
             return None
+
+    @property
+    def info(self):
+        return BaseDefinition.Definition("git", self.name, self.type, {})

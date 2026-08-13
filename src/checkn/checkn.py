@@ -34,10 +34,9 @@ def main(args=sys.argv[1:]):
     results = check_contexts(name)
 
     definition_count = 0
-    for result in results:
-        context, type = result
-        if type:
-            print(f"{context}: {type}")
+    for info in results:
+        if info.definition is not None:
+            print(f"{info.context}: {info.definition}")
             definition_count += 1
 
     if definition_count == 0:
@@ -53,10 +52,11 @@ CONTEXTS = {
 
 def check_contexts(name: str) -> None:
     context_definitions = []
-    for context_name, context_class in CONTEXTS.items():
-        context_definitions.append((context_name, check_context(context_class, name)))
+    for context, context_class in CONTEXTS.items():
+        definition = context_class(name)
+        context_definitions.append(definition.info)
     return context_definitions
 
 
 def check_context(context_class: type, name: str) -> str:
-    return context_class(name).type
+    return context_class(name).info
