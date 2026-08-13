@@ -15,10 +15,8 @@ license = "MIT"
 license-files = ["LICENSE.md"]
 readme = "README.md"
 requires-python = ">=3.12"
-dynamic = ["version"]
-dependencies = [
-  # TODO complete
-]
+dynamic = ["version", "dependencies"]
+# TODO Use pipreqs to generate requirements.txt
 
 [project.scripts] 
 checkn = "checkn:main"
@@ -31,3 +29,4 @@ checkn = "checkn:main"
 
 [tool.setuptools.dynamic]
 version = {attr = "checkn.__version__"}
+dependencies = {file = ["requirements.txt"]}
