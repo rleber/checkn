@@ -1,5 +1,3 @@
-<!-- TODO: Update date -->
-
 The MIT License (MIT)
 Copyright © 2026 Richard LeBer
 

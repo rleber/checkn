@@ -1,26 +1,31 @@
 <!-- TODO: Complete information -->
 
-# setup-py
+# checkn
 
-Create a Python module skeleton
+Check if a name is a defined Python name
 
 ## Description
 
-Tool to build a skeleton for a new Python module
+Tool to check if a name is defined Python name:
+- A builtin class
+- A builtin module
+- A module in the standard libraries
+- An installable library
+- An installed library on the current system
 
 ## Getting Started
 
 ### Dependencies
 
-git
+
 
 ### Installing
 
-`pip install setup-py`
+`pip install checkn`
 
 ### Executing program
 
-`setup-py <module name>`
+`checkn <name>`
 
 ## Author
 
