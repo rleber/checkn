@@ -11,6 +11,14 @@ from importlib import metadata
 # TODO Change result of type checking functions to structured data
 
 
+"""
+TODO Possible future development:
+
+It is possible to retrieve the names of classes (or other objects)
+defined in a importable module, using pkgutil
+"""
+
+
 class PythonDefinition:
     @classmethod
     def builtin_classes(cls) -> list[str]:

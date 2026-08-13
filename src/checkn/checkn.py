@@ -28,21 +28,6 @@ def main(args=sys.argv[1:]):
         print(f"{name} is {p.a(module_type)}")
     else:
         print(f"{name} is unknown")
-        """
-        class_list = definition.get_all_stdlib_classes()
-        matching_modules = [cls_info for cls_info in class_list if cls_info[2] == name]
-        if len(matching_modules) == 0:
-            print(f"{name} is not a module or class in the Python standard library")
-            exit(1)
-        for module_name, installer, _ in matching_modules:
-            if installer is None:
-                print(
-                    f"{name} is a class in the {module_name} module of the Python standard library"
-                )
-            else:
-                print(
-                    f"{name} is a class in the {matching_modules} modules installed by {installer}"
-                )"""
 
 
 main()
