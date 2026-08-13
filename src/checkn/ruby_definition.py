@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+"""
+ruby_definition.py
 
-# Check how a name is defined in common Ruby usage (if at all)
-
+Check how a name is defined in common Ruby usage (if at all)
+"""
 
 import subprocess
 

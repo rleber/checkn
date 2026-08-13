@@ -1,3 +1,11 @@
+"""
+test_python_definition.py
+
+Run tests on PythonDefinition class
+
+Usage: pytest test_python_definition.py
+"""
+
 import sys
 from pathlib import Path
 
@@ -212,7 +220,7 @@ def test_is_other_module():
     ).is_other_module  # Path is an identifier in a stdlib module
 
 
-def test_basic_type():
+def test_type():
     assert PythonDefinition("str").type == "builtin class"
     assert PythonDefinition("math").type == "builtin module"
     assert PythonDefinition("collections").type == "stdlib module"

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+"""
+python_definition.py
 
-# Check how a name is defined in common Python usage (if at all)
+Check how a name is defined in common Python usage (if at all)
+"""
 
 import builtins
 import inspect

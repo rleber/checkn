@@ -1,4 +1,10 @@
-# Run tests on checkn utility
+"""
+test_checkn.py
+
+Run tests on checkn utility
+
+Usage: pytest test_checkn.py
+"""
 
 import subprocess
 

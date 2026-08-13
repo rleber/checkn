@@ -1,3 +1,11 @@
+"""
+test_ruby_definition.py
+
+Run tests on RubyDefinition class
+
+Usage: pytest test_ruby_definition.py
+"""
+
 import sys
 from pathlib import Path
 
@@ -18,7 +26,7 @@ def test_is_builtin_class():
     assert RubyDefinition("BasicObject").is_builtin_class
 
 
-def test_basic_type():
+def test_type():
     assert RubyDefinition("rails").type == "gem"
     assert RubyDefinition("basic_object").type == "builtin class"
     assert RubyDefinition("BasicObject").type == "builtin class"
