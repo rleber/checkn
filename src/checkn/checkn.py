@@ -52,7 +52,7 @@ CONTEXTS = {
 
 def check_contexts(name: str) -> None:
     context_definitions = []
-    for context, context_class in CONTEXTS.items():
+    for context_class in CONTEXTS.values():
         definition = context_class(name)
         context_definitions.append(definition.info)
     return context_definitions
