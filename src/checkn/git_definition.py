@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-github_definition.py
+git_definition.py
 Check if a name is in use as a repository on Github
 - By the current user only
 """
