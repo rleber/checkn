@@ -10,9 +10,6 @@ pip install checkn
 checkn foo
 """
 
-# TODO Change context classes to inherit from a ContextDefinition root class
-# TODO Change return to use context.info method and return structured data
-
 import argparse
 import sys
 
@@ -20,8 +17,6 @@ from checkn.git_definition import GitDefinition
 from checkn.python_definition import PythonDefinition
 from checkn.ruby_definition import RubyDefinition
 from checkn.shell_definition import ShellDefinition
-
-# TODO Should have a refresh function
 
 
 def main(args=sys.argv[1:]):
