@@ -1,3 +1,9 @@
+"""
+case_conversion.py
+
+Convert snake_case to UpperCamelCase
+"""
+
 import re
 
 

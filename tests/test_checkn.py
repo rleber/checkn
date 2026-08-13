@@ -27,3 +27,7 @@ def test_ruby_word():
 
 def test_python_and_ruby_word():
     assert run_checkn_for("dict") == ["python: builtin class", "ruby: gem"]
+
+
+def test_python_and_git_word():
+    assert run_checkn_for("checkn") == ["git: repository", "python: installed module"]
