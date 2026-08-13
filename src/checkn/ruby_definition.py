@@ -5,7 +5,6 @@ ruby_definition.py
 Check how a name is defined in common Ruby usage (if at all)
 """
 
-# TODO Check ruby reserved words: https://ruby-doc.org/core-3.1.2/doc/keywords_rdoc.html
 # TODO Check rails reserved words
 
 import subprocess
@@ -17,12 +16,61 @@ from checkn.case_conversion import upper_camel_case
 
 
 class RubyDefinition(BaseDefinition):
+    # Per https://ruby-doc.org/core-3.1.2/doc/keywords_rdoc.html
+    KEYWORDS = (
+        "__ENCODING__",
+        "__LINE__",
+        "__FILE__",
+        "BEGIN",
+        "END",
+        "alias",
+        "and",
+        "begin",
+        "break",
+        "case",
+        "class",
+        "def",
+        "defined?",
+        "do",
+        "else",
+        "elsif",
+        "end",
+        "ensure",
+        "false",
+        "for",
+        "if",
+        "in",
+        "module",
+        "next",
+        "nil",
+        "not",
+        "or",
+        "redo",
+        "rescue",
+        "retry",
+        "return",
+        "self",
+        "super",
+        "then",
+        "true",
+        "undef",
+        "unless",
+        "until",
+        "when",
+        "while",
+        "yield",
+    )
+
     def __init__(self, name: str):
         self._name = name
 
     @property
     def name(self):
         return self._name
+
+    @property
+    def is_keyword(self):
+        return self.name in self.KEYWORDS
 
     @property
     def is_gem(self):
@@ -50,7 +98,9 @@ class RubyDefinition(BaseDefinition):
 
     @property
     def type(self):
-        if self.is_gem:
+        if self.is_keyword:
+            return "keyword"
+        elif self.is_gem:
             return "gem"
         elif self.is_builtin_class:
             return "builtin class"

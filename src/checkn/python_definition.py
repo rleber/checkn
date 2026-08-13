@@ -7,21 +7,19 @@ Check how a name is defined in common Python usage (if at all)
 
 import builtins
 import inspect
+import keyword
 import pkgutil
 import sys
 from importlib import metadata
 
 from checkn.base_definition import BaseDefinition
 
-# TODO Change result of type checking functions to structured data
-# TODO Add keyword checking: import keyword; keyword.kwlist
-
-
 """
 TODO Possible future development:
 
 It is possible to retrieve the names of classes (or other objects)
-defined in a importable module, using pkgutil
+defined in a importable module, using pkgutil. This is slow, but 
+might be worth doing
 """
 
 
@@ -80,6 +78,10 @@ class PythonDefinition(BaseDefinition):
     @property
     def name(self):
         return self._name
+
+    @property
+    def is_keyword(self):
+        return self.name in keyword.kwlist
 
     @property
     def is_builtin_class(self):
@@ -143,7 +145,9 @@ class PythonDefinition(BaseDefinition):
 
     @property
     def type(self):
-        if self.is_builtin_class:
+        if self.is_keyword:
+            return "keyword"
+        elif self.is_builtin_class:
             return "builtin class"
         elif self.is_builtin_module:
             return "builtin module"

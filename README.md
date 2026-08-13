@@ -1,23 +1,33 @@
-<!-- TODO: Complete information -->
-
 # checkn
 
 Check if a name is a defined Python name
 
 ## Description
 
-Tool to check if a name is defined Python name:
-- A builtin class
-- A builtin module
-- A module in the standard libraries
-- An installable library
-- An installed library on the current system
+Tool to check if a name is defined name:
+- For Python
+  - A builtin class
+  - A builtin module
+  - A module in the standard libraries
+  - An installable library
+  - An installed library on the current system
+- For Ruby
+  - A builtin class
+  - A gem
+- For Git
+  - A repository created by this user
+- For the shell
+  - A zsh reserved word
+  - A bash reserved word
+  - An alias defined on this system
+  - A function defined on this system
+  - A program defined on this system
 
 ## Getting Started
 
 ### Dependencies
 
-
+requests
 
 ### Installing
 
@@ -35,7 +45,9 @@ richard.leber@gmail.com
 ## Version History
 
 * 0.0.1
-    * Initial Release
+    * Initial release: Python only
+* 0.0.5
+    * Latest release: Python, Ruby, Git, Shell
 
 ## License
 

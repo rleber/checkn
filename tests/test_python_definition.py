@@ -21,7 +21,26 @@ def test_uninstalled_modules():
     assert uninstalled_module in uninstalled_modules
 
 
+def test_is_keyword():
+    assert PythonDefinition("assert").is_keyword  # assert is a keyword
+    assert not PythonDefinition("str").is_keyword  # str is a builtin class
+    assert not PythonDefinition("math").is_keyword  # math is a builtin module
+    assert not PythonDefinition(
+        "collections"
+    ).is_keyword  # collections is a stdlib module
+    assert not PythonDefinition(
+        "build123d"
+    ).is_keyword  # build123d is an defined module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_keyword  # this is another installable (but uninstalled) module
+    assert not PythonDefinition(
+        "Path"
+    ).is_keyword  # Path is an identifier in a stdlib module # Path is an identifier in a stdlib module
+
+
 def test_is_builtin_class():
+    assert not PythonDefinition("assert").is_builtin_class  # assert is a keyword
     assert PythonDefinition("str").is_builtin_class  # str is a builtin class
     assert not PythonDefinition("math").is_builtin_class  # math is a builtin module
     assert not PythonDefinition(
@@ -39,6 +58,7 @@ def test_is_builtin_class():
 
 
 def test_is_builtin_module():
+    assert not PythonDefinition("assert").is_builtin_module  # assert is a keyword
     assert not PythonDefinition("str").is_builtin_module  # str is a builtin class
     assert PythonDefinition("math").is_builtin_module  # math is a builtin module
     assert not PythonDefinition(
@@ -56,6 +76,7 @@ def test_is_builtin_module():
 
 
 def test_is_standard_module():
+    assert not PythonDefinition("assert").is_standard_module  # assert is a keyword
     assert not PythonDefinition("str").is_standard_module  # str is a builtin class
     assert PythonDefinition("math").is_standard_module  # math is a builtin module
     assert PythonDefinition(
@@ -73,6 +94,7 @@ def test_is_standard_module():
 
 
 def test_is_installed_module():
+    assert not PythonDefinition("assert").is_standard_module  # assert is a keyword
     assert not PythonDefinition("str").is_installed_module  # str is a builtin class
     assert not PythonDefinition("math").is_installed_module  # math is a builtin module
     assert not PythonDefinition(
@@ -90,6 +112,7 @@ def test_is_installed_module():
 
 
 def test_is_installable_module():
+    assert not PythonDefinition("assert").is_installable_module  # assert is a keyword
     assert not PythonDefinition("str").is_installable_module  # str is a builtin class
     assert not PythonDefinition(
         "math"
@@ -109,6 +132,7 @@ def test_is_installable_module():
 
 
 def test_is_module():
+    assert not PythonDefinition("assert").is_module  # assert is a keyword
     assert not PythonDefinition("str").is_module  # str is a builtin class
     assert PythonDefinition("math").is_module  # math is a builtin module
     assert PythonDefinition("collections").is_module  # collections is a stdlib module
@@ -122,6 +146,7 @@ def test_is_module():
 
 
 def test_is_builtin():
+    assert not PythonDefinition("assert").is_builtin  # assert is a keyword
     assert PythonDefinition("str").is_builtin  # str is a builtin class
     assert PythonDefinition("math").is_builtin  # math is a builtin module
     assert not PythonDefinition(
@@ -139,6 +164,7 @@ def test_is_builtin():
 
 
 def test_is_stdlib_module():
+    assert not PythonDefinition("assert").is_stdlib_module  # assert is a keyword
     assert not PythonDefinition("str").is_stdlib_module  # str is a builtin class
     assert not PythonDefinition("math").is_stdlib_module  # math is a builtin module
     assert PythonDefinition(
@@ -156,6 +182,7 @@ def test_is_stdlib_module():
 
 
 def test_is_standard():
+    assert not PythonDefinition("assert").is_standard  # assert is a keyword
     assert PythonDefinition("str").is_standard  # str is a builtin class
     assert PythonDefinition("math").is_standard  # math is a builtin module
     assert PythonDefinition(
@@ -173,6 +200,7 @@ def test_is_standard():
 
 
 def test_is_known_module():
+    assert not PythonDefinition("assert").is_known_module  # assert is a keyword
     assert not PythonDefinition("str").is_known_module  # str is a builtin class
     assert PythonDefinition("math").is_known_module  # math is a builtin module
     assert PythonDefinition(
@@ -190,6 +218,7 @@ def test_is_known_module():
 
 
 def test_is_known():
+    assert not PythonDefinition("assert").is_known  # assert is a keyword
     assert PythonDefinition("str").is_known  # str is a builtin class
     assert PythonDefinition("math").is_known  # math is a builtin module
     assert PythonDefinition("collections").is_known  # collections is a stdlib module
@@ -203,6 +232,7 @@ def test_is_known():
 
 
 def test_is_other_module():
+    assert not PythonDefinition("assert").is_other_module  # assert is a keyword
     assert not PythonDefinition("str").is_other_module  # str is a builtin class
     assert not PythonDefinition("math").is_other_module  # math is a builtin module
     assert not PythonDefinition(
@@ -221,6 +251,7 @@ def test_is_other_module():
 
 
 def test_type():
+    assert PythonDefinition("assert").type == "keyword"
     assert PythonDefinition("str").type == "builtin class"
     assert PythonDefinition("math").type == "builtin module"
     assert PythonDefinition("collections").type == "stdlib module"
@@ -234,6 +265,7 @@ def test_type():
 
 
 def test_installer():
+    assert PythonDefinition("assert").installer == None
     assert PythonDefinition("str").installer == None
     assert PythonDefinition("math").installer == None
     assert PythonDefinition("collections").installer == None
