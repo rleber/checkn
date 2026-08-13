@@ -213,18 +213,15 @@ def test_is_other_module():
 
 
 def test_basic_type():
-    assert PythonDefinition("str").basic_type == "builtin class"
-    assert PythonDefinition("math").basic_type == "builtin module"
-    assert PythonDefinition("collections").basic_type == "stdlib module"
-    assert PythonDefinition("typer").basic_type == "installed module"
-    assert PythonDefinition("build123d").basic_type == "installed module"
-    assert (
-        PythonDefinition("30fcd23745efe32ce681__mypyc").basic_type
-        == "installable module"
-    )
+    assert PythonDefinition("str").type == "builtin class"
+    assert PythonDefinition("math").type == "builtin module"
+    assert PythonDefinition("collections").type == "stdlib module"
+    assert PythonDefinition("typer").type == "installed module"
+    assert PythonDefinition("build123d").type == "installed module"
+    assert PythonDefinition("30fcd23745efe32ce681__mypyc").type == "installable module"
     # I don't think there is an example of a known module that is "other"
     assert (
-        PythonDefinition("Path").basic_type is None
+        PythonDefinition("Path").type is None
     )  # Path is an identifier in a stdlib module
 
 

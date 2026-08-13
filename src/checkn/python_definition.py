@@ -136,7 +136,7 @@ class PythonDefinition:
         return self.is_known_module or self.is_other_module
 
     @property
-    def basic_type(self):
+    def type(self):
         if self.is_builtin_class:
             return "builtin class"
         elif self.is_builtin_module:

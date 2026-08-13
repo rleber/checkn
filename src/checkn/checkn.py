@@ -20,7 +20,7 @@ def main(args=sys.argv[1:]):
     parsed_args = parser.parse_args(args)
     name = parsed_args.name
     definition = PythonDefinition(name)
-    module_type = definition.basic_type
+    module_type = definition.type
 
     p = inflect.engine()
 
