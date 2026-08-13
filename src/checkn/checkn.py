@@ -5,8 +5,8 @@
 import argparse
 import sys
 
-from python_definition import PythonDefinition
-from ruby_definition import RubyDefinition
+from checkn.python_definition import PythonDefinition
+from checkn.ruby_definition import RubyDefinition
 
 # TODO Should have a refresh function
 
@@ -47,6 +47,3 @@ def check_contexts(name: str) -> None:
 
 def check_context(context_class: type, name: str) -> str:
     return context_class(name).type
-
-
-main()

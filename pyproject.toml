@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [project.scripts] 
-setup-py = "checkn:main"
+checkn = "checkn:main"
 
 # [project.urls] # TODO Complete or remove
 # Homepage = "url"

@@ -6,7 +6,8 @@
 import subprocess
 
 import requests
-from case_conversion import upper_camel_case
+
+from checkn.case_conversion import upper_camel_case
 
 
 class RubyDefinition:
