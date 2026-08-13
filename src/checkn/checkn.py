@@ -5,8 +5,8 @@
 import argparse
 import sys
 
-import inflect
 from python_definition import PythonDefinition
+from ruby_definition import RubyDefinition
 
 # TODO Should have a refresh function
 
@@ -19,15 +19,34 @@ def main(args=sys.argv[1:]):
     parser.add_argument("name", help="Name to check")
     parsed_args = parser.parse_args(args)
     name = parsed_args.name
-    definition = PythonDefinition(name)
-    module_type = definition.type
+    results = check_contexts(name)
 
-    p = inflect.engine()
+    definition_count = 0
+    for result in results:
+        context, type = result
+        if type:
+            print(f"{context}: {type}")
+            definition_count += 1
 
-    if module_type:
-        print(f"{name} is {p.a(module_type)}")
-    else:
-        print(f"{name} is unknown")
+    if definition_count == 0:
+        print("undefined")
+
+
+CONTEXTS = {
+    "python": PythonDefinition,
+    "ruby": RubyDefinition,
+}
+
+
+def check_contexts(name: str) -> None:
+    context_definitions = []
+    for context_name, context_class in CONTEXTS.items():
+        context_definitions.append((context_name, check_context(context_class, name)))
+    return context_definitions
+
+
+def check_context(context_class: type, name: str) -> str:
+    return context_class(name).type
 
 
 main()
