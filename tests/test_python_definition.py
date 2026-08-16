@@ -32,6 +32,9 @@ def test_is_keyword():
         "build123d"
     ).is_keyword  # build123d is an defined module
     assert not PythonDefinition(
+        "amass"
+    ).is_keyword  # amass is an uninstallable PyPI module
+    assert not PythonDefinition(
         uninstalled_module
     ).is_keyword  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
@@ -49,6 +52,9 @@ def test_is_builtin_class():
     assert not PythonDefinition(
         "build123d"
     ).is_builtin_class  # build123d is an defined module
+    assert not PythonDefinition(
+        "amass"
+    ).is_builtin_class  # amass is an uninstallable PyPI module
     assert not PythonDefinition(
         uninstalled_module
     ).is_builtin_class  # this is another installable (but uninstalled) module
@@ -68,6 +74,9 @@ def test_is_builtin_module():
         "build123d"
     ).is_builtin_module  # build123d is an defined module
     assert not PythonDefinition(
+        "amass"
+    ).is_builtin_module  # amass is an uninstallable PyPI module
+    assert not PythonDefinition(
         uninstalled_module
     ).is_builtin_module  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
@@ -86,6 +95,9 @@ def test_is_standard_module():
         "build123d"
     ).is_standard_module  # build123d is an defined module
     assert not PythonDefinition(
+        "amass"
+    ).is_standard_module  # amass is an uninstallable PyPI module
+    assert not PythonDefinition(
         uninstalled_module
     ).is_standard_module  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
@@ -103,6 +115,9 @@ def test_is_installed_module():
     assert PythonDefinition(
         "build123d"
     ).is_installed_module  # build123d is an defined module
+    assert not PythonDefinition(
+        "amass"
+    ).is_installed_module  # amass is an uninstallable PyPI module
     assert not PythonDefinition(
         uninstalled_module
     ).is_installed_module  # this is an installed module
@@ -123,6 +138,9 @@ def test_is_installable_module():
     assert PythonDefinition(
         "build123d"
     ).is_installable_module  # build123d is an defined module
+    assert not PythonDefinition(
+        "amass"
+    ).is_installable_module  # amass is an uninstallable PyPI module
     assert PythonDefinition(
         uninstalled_module
     ).is_installable_module  # this is another installable (but uninstalled) module
@@ -131,12 +149,37 @@ def test_is_installable_module():
     ).is_installable_module  # Path is an identifier in a standard module
 
 
+def test_is_uninstallable_module():
+    assert not PythonDefinition("assert").is_uninstallable_module  # assert is a keyword
+    assert not PythonDefinition("str").is_uninstallable_module  # str is a builtin class
+    assert not PythonDefinition(
+        "math"
+    ).is_uninstallable_module  # math is a builtin module
+    assert not PythonDefinition(
+        "collections"
+    ).is_uninstallable_module  # collections is a standard module
+    assert not PythonDefinition(
+        "build123d"
+    ).is_uninstallable_module  # build123d is an defined module
+    assert PythonDefinition(
+        "amass"
+    ).is_uninstallable_module  # amass is an uninstallable PyPI module
+    assert not PythonDefinition(
+        uninstalled_module
+    ).is_uninstallable_module  # this is another installable (but uninstalled) module
+    assert not PythonDefinition(
+        "Path"
+    ).is_uninstallable_module  # Path is an identifier in a standard module
+
+
 def test_is_module():
     assert not PythonDefinition("assert").is_module  # assert is a keyword
     assert not PythonDefinition("str").is_module  # str is a builtin class
     assert PythonDefinition("math").is_module  # math is a builtin module
     assert PythonDefinition("collections").is_module  # collections is a stdlib module
     assert PythonDefinition("build123d").is_module  # build123d is an defined module
+    assert PythonDefinition("amass").is_module  # amass is an uninstallable PyPI module
+
     assert PythonDefinition(
         uninstalled_module
     ).is_module  # this is another installable (but uninstalled) module
@@ -156,6 +199,9 @@ def test_is_builtin():
         "build123d"
     ).is_builtin  # build123d is an defined module
     assert not PythonDefinition(
+        "amass"
+    ).is_builtin  # amass is an uninstallable PyPI module
+    assert not PythonDefinition(
         uninstalled_module
     ).is_builtin  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
@@ -173,6 +219,9 @@ def test_is_stdlib_module():
     assert not PythonDefinition(
         "build123d"
     ).is_stdlib_module  # build123d is an defined module
+    assert not PythonDefinition(
+        "amass"
+    ).is_stdlib_module  # amass is an uninstallable PyPI module
     assert not PythonDefinition(
         uninstalled_module
     ).is_stdlib_module  # this is another installable (but uninstalled) module
@@ -192,6 +241,9 @@ def test_is_standard():
         "build123d"
     ).is_standard  # build123d is an defined module
     assert not PythonDefinition(
+        "amass"
+    ).is_standard  # amass is an uninstallable PyPI module
+    assert not PythonDefinition(
         uninstalled_module
     ).is_standard  # this is another installable (but uninstalled) module
     assert not PythonDefinition(
@@ -209,6 +261,9 @@ def test_is_known_module():
     assert PythonDefinition(
         "build123d"
     ).is_known_module  # build123d is an defined module
+    assert not PythonDefinition(
+        "amass"
+    ).is_standard_module  # amass is an uninstallable PyPI module
     assert PythonDefinition(
         uninstalled_module
     ).is_known_module  # this is another installable (but uninstalled) module
@@ -223,6 +278,7 @@ def test_is_known():
     assert PythonDefinition("math").is_known  # math is a builtin module
     assert PythonDefinition("collections").is_known  # collections is a stdlib module
     assert PythonDefinition("build123d").is_known  # build123d is an defined module
+    assert PythonDefinition("amass").is_known  # amass is an uninstallable PyPI module
     assert PythonDefinition(
         uninstalled_module
     ).is_known  # this is another installable (but uninstalled) module
@@ -242,6 +298,9 @@ def test_is_other_module():
         "build123d"
     ).is_other_module  # build123d is an defined module
     assert not PythonDefinition(
+        "amass"
+    ).is_other_module  # amass is an uninstallable PyPI module
+    assert not PythonDefinition(
         uninstalled_module
     ).is_other_module  # this is another installable (but uninstalled) module
     # I don't think there is an example of a known module that is "other"
@@ -257,7 +316,8 @@ def test_type():
     assert PythonDefinition("collections").type == "stdlib module"
     assert PythonDefinition("typer").type == "installed module"
     assert PythonDefinition("build123d").type == "installed module"
-    assert PythonDefinition("30fcd23745efe32ce681__mypyc").type == "installable module"
+    assert PythonDefinition("amass").type == "uninstallable module"
+    assert PythonDefinition(uninstalled_module).type == "installable module"
     # I don't think there is an example of a known module that is "other"
     assert (
         PythonDefinition("Path").type is None
@@ -271,6 +331,7 @@ def test_installer():
     assert PythonDefinition("collections").installer == None
     assert PythonDefinition("typer").installer == "pip"
     assert PythonDefinition("build123d").installer == "uv"
+    assert PythonDefinition("amass").installer == None
     assert PythonDefinition(uninstalled_module).installer == None
     assert PythonDefinition("Path").installer is None
 
