@@ -13,6 +13,7 @@ checkn foo
 import argparse
 import sys
 
+from checkn import __version__
 from checkn.git_definition import GitDefinition
 from checkn.python_definition import PythonDefinition
 from checkn.ruby_definition import RubyDefinition
@@ -24,6 +25,7 @@ def main(args=sys.argv[1:]):
         prog="checkn",
         description="Check if a name is defined Python name",
     )
+    parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument("name", help="Name to check")
     parsed_args = parser.parse_args(args)
     name = parsed_args.name
