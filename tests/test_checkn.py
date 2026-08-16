@@ -28,7 +28,7 @@ def test_python_word():
 
 
 def test_ruby_word():
-    assert run_checkn_for("foo") == ["ruby: gem"]
+    assert run_checkn_for("sidekiq") == ["ruby: gem"]
 
 
 def test_python_and_ruby_word():
