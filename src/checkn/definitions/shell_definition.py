@@ -13,7 +13,7 @@ import re
 import shlex
 import subprocess
 
-from checkn.base_definition import BaseDefinition
+from checkn.definitions.base_definition import BaseDefinition
 
 
 class ShellDefinition(BaseDefinition):

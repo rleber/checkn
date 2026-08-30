@@ -11,8 +11,8 @@ import subprocess
 
 import requests
 
-from checkn.base_definition import BaseDefinition
 from checkn.case_conversion import upper_camel_case
+from checkn.definitions.base_definition import BaseDefinition
 
 
 class RubyDefinition(BaseDefinition):

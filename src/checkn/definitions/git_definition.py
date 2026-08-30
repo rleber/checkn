@@ -12,7 +12,7 @@ Check if a name is in use as a repository on Github
 
 import subprocess
 
-from checkn.base_definition import BaseDefinition
+from checkn.definitions.base_definition import BaseDefinition
 
 
 class GitDefinition(BaseDefinition):

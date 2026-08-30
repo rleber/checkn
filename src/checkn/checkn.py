@@ -15,10 +15,10 @@ from typing import Annotated
 import typer
 
 from checkn import __version__
-from checkn.git_definition import GitDefinition
-from checkn.python_definition import PythonDefinition
-from checkn.ruby_definition import RubyDefinition
-from checkn.shell_definition import ShellDefinition
+from checkn.definitions.git_definition import GitDefinition
+from checkn.definitions.python_definition import PythonDefinition
+from checkn.definitions.ruby_definition import RubyDefinition
+from checkn.definitions.shell_definition import ShellDefinition
 
 app = typer.Typer(
     name="checkn",

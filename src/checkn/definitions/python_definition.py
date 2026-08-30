@@ -14,7 +14,7 @@ from importlib import metadata
 
 import requests
 
-from checkn.base_definition import BaseDefinition
+from checkn.definitions.base_definition import BaseDefinition
 
 """
 TODO Possible future development:
