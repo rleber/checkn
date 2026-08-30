@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
 """
-ruby_definition.py
-
 Check how a name is defined in common Ruby usage (if at all)
 """
 
@@ -11,11 +8,11 @@ import subprocess
 
 import requests
 
-from checkn.base_definition import BaseDefinition
 from checkn.case_conversion import upper_camel_case
+from checkn.contexts.base_context import BaseContext
 
 
-class RubyDefinition(BaseDefinition):
+class RubyContext(BaseContext):
     # Per https://ruby-doc.org/core-3.1.2/doc/keywords_rdoc.html
     KEYWORDS = (
         "__ENCODING__",
@@ -109,4 +106,4 @@ class RubyDefinition(BaseDefinition):
 
     @property
     def info(self):
-        return BaseDefinition.Definition("ruby", self.name, self.type, {})
+        return BaseContext.Definition("ruby", self.name, self.type, {})

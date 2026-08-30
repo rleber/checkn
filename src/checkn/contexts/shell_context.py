@@ -1,8 +1,4 @@
-#!/usr/bin/env python3
-
 """
-shell_definition.py
-
 Check if a name is in use as a shell resource, e.g.
 - A shell function
 - A shell alias
@@ -13,11 +9,11 @@ import re
 import shlex
 import subprocess
 
-from checkn.base_definition import BaseDefinition
+from checkn.contexts.base_context import BaseContext
 
 
-class ShellDefinition(BaseDefinition):
-    # TODO Move __init__ and name property to BaseDefinition
+class ShellContext(BaseContext):
+    # TODO Move __init__ and name property to BaseContext
 
     def __init__(self, name: str):
         self._name = name
@@ -36,21 +32,19 @@ class ShellDefinition(BaseDefinition):
 
     @staticmethod
     def flatten_script_lines(script: str) -> str:
-        return ShellDefinition.join_script_lines(
-            ShellDefinition.break_script_lines(script)
-        )
+        return ShellContext.join_script_lines(ShellContext.break_script_lines(script))
 
     UNSAFE_SHELL_PATTERN = re.compile(r"[\s\t\n\r$1~\{\}*?[<>|&'\"\]`#(),;=\\]")
 
     @staticmethod
     def quote(s: str) -> str:
-        if ShellDefinition.UNSAFE_SHELL_PATTERN.search(s):
+        if ShellContext.UNSAFE_SHELL_PATTERN.search(s):
             return shlex.quote(s)
         return s
 
     @property
     def quoted_name(self) -> str:
-        return ShellDefinition.quote(self.name)
+        return ShellContext.quote(self.name)
 
     @staticmethod
     def exec(args: list, check=False, shell=False) -> subprocess.CompletedProcess:
@@ -73,7 +67,7 @@ class ShellDefinition(BaseDefinition):
         return self.name
 
     def __repr__(self):
-        return f"ShellDefinition({self.name!r})"
+        return f"ShellContext({self.name!r})"
 
     @property
     def is_zsh_keyword(self):
@@ -118,4 +112,4 @@ class ShellDefinition(BaseDefinition):
 
     @property
     def info(self):
-        return BaseDefinition.Definition("shell", self.name, self.type, {})
+        return BaseContext.Definition("shell", self.name, self.type, {})

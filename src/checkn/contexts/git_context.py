@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-
 """
-git_definition.py
 Check if a name is in use as a repository on Github
 - By the current user only
 """
@@ -12,10 +9,10 @@ Check if a name is in use as a repository on Github
 
 import subprocess
 
-from checkn.base_definition import BaseDefinition
+from checkn.contexts.base_context import BaseContext
 
 
-class GitDefinition(BaseDefinition):
+class GitContext(BaseContext):
     @classmethod
     def current_user(cls):
         result = subprocess.run(
@@ -53,4 +50,4 @@ class GitDefinition(BaseDefinition):
 
     @property
     def info(self):
-        return BaseDefinition.Definition("git", self.name, self.type, {})
+        return BaseContext.Definition("git", self.name, self.type, {})

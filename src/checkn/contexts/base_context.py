@@ -1,14 +1,11 @@
-#!/usr/bin/env python3
-
 """
-base_definition.py
-Base class for context definition classes (e.g. RubyDefinition)
+Base class for context classes (e.g. RubyContext)
 """
 
 from typing import NamedTuple
 
 
-class BaseDefinition:
+class BaseContext:
     class Definition(NamedTuple):
         context: str
         name: str
