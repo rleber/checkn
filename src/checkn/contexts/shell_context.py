@@ -4,7 +4,10 @@ Dynamic shell context evaluator.
 
 from pathlib import Path
 
-from checkn.contexts.base_check import BaseCheck, BaseContext
+from checkn.contexts.base_check import BaseCheck
+
+# Correctly segmented imports mapping to independent files
+from checkn.contexts.base_context import BaseContext
 from checkn.utils.discovery import load_checks
 
 
@@ -26,13 +29,14 @@ class ShellContext(BaseContext):
     def _load_checks(cls) -> list[type[BaseCheck]]:
         """
         Retrieve cached or newly discovered shell checks.
+        Side-effects: filesystem read.
         """
         if cls._registry is not None:
             return cls._registry
 
         checks_dir = Path(__file__).parent / "shell" / "checks"
         package_prefix = "checkn.contexts.shell.checks"
-        cls._registry = load_checks(checks_dir, package_prefix)
+        cls._registry = load_checks(checks_dir, package_prefix, BaseCheck)
         return cls._registry
 
     @property

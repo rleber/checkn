@@ -65,7 +65,7 @@ def get_contexts() -> dict[str, type[BaseContext]]:
         return registry
 
     for _, module_name, _ in pkgutil.iter_modules([str(contexts_dir)]):
-        if module_name == "base_context":
+        if module_name.startswith("base_"):
             continue
 
         full_module_name = f"{package_prefix}.{module_name}"
