@@ -11,7 +11,7 @@ class FunctionCheck(BaseCheck):
     Evaluates if the target name is a shell function.
     """
 
-    priority = 40
+    priority = 30
 
     def evaluate(self, name: str) -> str | None:
         """

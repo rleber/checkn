@@ -1,22 +1,23 @@
 """
-Executable program definition check.
+Builtin command definition check.
 """
 
 from checkn.contexts.base_check import BaseCheck
 from checkn.utils.shell import quote, run_command
 
 
-class ProgramCheck(BaseCheck):
+class BuiltinCheck(BaseCheck):
     """
-    Evaluates if the target name is an executable program.
+    Evaluates if the target name is an builtin command.
     """
 
-    priority = 50
+    priority = 40
 
     def evaluate(self, name: str) -> str | None:
         """
-        Check binary executable status using system PATH resolution.
+        Check builtin status using system PATH resolution.
         """
+        # Subprocess fallback using non-interactive shell to prevent banner interference
         quoted_name = quote(name)
         result = run_command(["zsh", "-c", f"which {quoted_name}"])
 
@@ -29,11 +30,7 @@ class ProgramCheck(BaseCheck):
 
         # Check last output line for valid executable path
         last_line = lines[-1]
-        if (
-            "not found" in last_line
-            or "reserved" in last_line
-            or "built-in" in last_line
-        ):
-            return None
+        if "built-in" in last_line:
+            return "builtin"
 
-        return "program"
+        return None
