@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "checkn"
-description = "Check if a name is a defined Python name"
+description = "Check if a name is already defined somewhere"
 authors = [
     {name="Richard LeBer", email = "richard.leber@gmail.com"}
 ]
@@ -18,7 +18,7 @@ requires-python = ">=3.12"
 dynamic = ["version", "dependencies"]
 
 [project.scripts] 
-checkn = "checkn:main"
+checkn = "checkn:entry"
 
 # [project.urls] # TODO Complete or remove
 # Homepage = "url"
