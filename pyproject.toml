@@ -18,7 +18,7 @@ requires-python = ">=3.12"
 dynamic = ["version", "dependencies"]
 
 [project.scripts] 
-checkn = "checkn:entry"
+checkn = "checkn.cli:entry"
 
 # [project.urls] # TODO Complete or remove
 # Homepage = "url"
