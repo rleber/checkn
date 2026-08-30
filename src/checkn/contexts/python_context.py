@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
 """
-python_definition.py
-
 Check how a name is defined in common Python usage (if at all)
 """
 
@@ -14,7 +11,7 @@ from importlib import metadata
 
 import requests
 
-from checkn.definitions.base_definition import BaseDefinition
+from checkn.contexts.base_context import BaseContext
 
 """
 TODO Possible future development:
@@ -25,7 +22,7 @@ might be worth doing
 """
 
 
-class PythonDefinition(BaseDefinition):
+class PythonContext(BaseContext):
     @classmethod
     def builtin_classes(cls) -> list[str]:
         classes = [name for name, _ in inspect.getmembers(builtins, inspect.isclass)]
@@ -216,4 +213,4 @@ class PythonDefinition(BaseDefinition):
 
     @property
     def info(self):
-        return BaseDefinition.Definition("python", self.name, self.type, {})
+        return BaseContext.Definition("python", self.name, self.type, {})
