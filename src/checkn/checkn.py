@@ -11,6 +11,7 @@ contexts may easily be defined by adding definitions to the definitions director
 usage:
 pip install checkn
 checkn foo
+checkn foo -c python -c ruby
 """
 
 from __future__ import annotations
@@ -34,16 +35,14 @@ app = typer.Typer(
 
 
 def version_callback(value: bool) -> None:
-    """Output application version and exit execution."""
+    """Output application version and exit execution. Side-effects: stdout, sys.exit."""
     if value:
         typer.echo(__version__)
         raise typer.Exit()
 
 
 def get_contexts() -> dict[str, type[BaseContext]]:
-    """
-    Scan the 'contexts' directory and discover context classes.
-    """
+    """Scan the 'contexts' directory and discover context classes."""
     contexts_dir = Path(__file__).parent / "contexts"
     package_prefix = "checkn.contexts"
     registry: dict[str, type[BaseContext]] = {}
@@ -73,27 +72,76 @@ def get_contexts() -> dict[str, type[BaseContext]]:
     return registry
 
 
+def filter_contexts(
+    available_contexts: dict[str, type[BaseContext]],
+    selected_contexts: list[str] | None,
+) -> dict[str, type[BaseContext]]:
+    """Filter context registry against user-requested context keys. Side-effects: stdout (warnings)."""
+    if not selected_contexts:
+        return available_contexts
+
+    # Normalize case and split comma-separated values if provided
+    requested_keys: set[str] = set()
+    for item in selected_contexts:
+        for sub_item in item.split(","):
+            cleaned = sub_item.strip().lower()
+            if cleaned:
+                requested_keys.add(cleaned)
+
+    filtered: dict[str, type[BaseContext]] = {}
+    for key in requested_keys:
+        if key in available_contexts:
+            filtered[key] = available_contexts[key]
+        else:
+            typer.echo(
+                f"Warning: Context '{key}' not found. Available: {', '.join(available_contexts.keys())}",
+                err=True,
+            )
+
+    return filtered
+
+
 def check_context(
     context_class: type[BaseContext], name: str
 ) -> BaseContext.Definition:
-    """
-    Check the meaning of a name in a single context.
-    """
+    """Check the meaning of a name in a single context."""
     return context_class(name).info
 
 
 def check_contexts(
     contexts: dict[str, type[BaseContext]], name: str
 ) -> list[BaseContext.Definition]:
-    """
-    Check the meaning of a name in multiple single contexts.
-    """
+    """Check the meaning of a name in multiple single contexts."""
     return [check_context(cls, name) for cls in contexts.values()]
+
+
+def list_definitions(
+    name: str, selected_contexts: list[str] | None = None
+) -> list[BaseContext.Definition]:
+    """Retrieve context definitions for a given target, constrained by optional context filters."""
+    contexts = get_contexts()
+    active_contexts = filter_contexts(contexts, selected_contexts)
+    return check_contexts(active_contexts, str(name))
+
+
+def print_definitions(definitions: list[BaseContext.Definition]) -> None:
+    """Print formatted non-null definition records. Side-effects: stdout."""
+    for info in definitions:
+        if info.definition is not None:
+            typer.echo(f"{info.context}: {info.definition}")
 
 
 @app.command()
 def check_name(
     name: Annotated[str, typer.Argument(..., help="Name to check")],
+    context: Annotated[
+        list[str] | None,
+        typer.Option(
+            "-c",
+            "--context",
+            help="Limit check to specific context(s) (e.g. -c python -c ruby or -c python,ruby).",
+        ),
+    ] = None,
     version: Annotated[
         bool | None,
         typer.Option(
@@ -105,28 +153,18 @@ def check_name(
         ),
     ] = False,
 ) -> None:
-    """Check the meaning of a name in multiple contexts"""
+    """Check the meaning of a name in multiple contexts. Side-effects: stdout."""
+    results = list_definitions(str(name), selected_contexts=context)
+    defined_results = [r for r in results if r.definition is not None]
 
-    results = list_definitions(str(name))
-    if len(results) == 0:
-        print("undefined")
+    if not defined_results:
+        typer.echo("undefined")
     else:
         print_definitions(results)
 
 
-def list_definitions(name: str) -> list[BaseContext.Definition]:
-    contexts = get_contexts()
-    return check_contexts(contexts, str(name))
-
-
-def print_definitions(definitions: list[BaseContext.Definition]) -> None:
-    for info in definitions:
-        if info.definition is not None:
-            print(f"{info.context}: {info.definition}")
-
-
 def entry() -> None:
-    """CLI entrypoint launcher."""
+    """CLI entrypoint launcher. Side-effects: app invocation."""
     app()
 
 
