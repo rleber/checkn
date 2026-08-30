@@ -12,6 +12,7 @@ usage:
 pip install checkn
 checkn foo
 checkn foo -c python -c ruby
+checkn -l
 """
 
 from __future__ import annotations
@@ -38,6 +39,19 @@ def version_callback(value: bool) -> None:
     """Output application version and exit execution. Side-effects: stdout, sys.exit."""
     if value:
         typer.echo(__version__)
+        raise typer.Exit()
+
+
+def list_contexts_callback(value: bool) -> None:
+    """List all available contexts and exit execution. Side-effects: stdout, sys.exit."""
+    if value:
+        contexts = get_contexts()
+        if not contexts:
+            typer.echo("No contexts found.")
+        else:
+            typer.echo("Available contexts:")
+            for key in sorted(contexts.keys()):
+                typer.echo(f"  - {key}")
         raise typer.Exit()
 
 
@@ -76,11 +90,10 @@ def filter_contexts(
     available_contexts: dict[str, type[BaseContext]],
     selected_contexts: list[str] | None,
 ) -> dict[str, type[BaseContext]]:
-    """Filter context registry against user-requested context keys. Side-effects: stdout (warnings)."""
+    """Filter context registry against user-requested context keys. Side-effects: stderr."""
     if not selected_contexts:
         return available_contexts
 
-    # Normalize case and split comma-separated values if provided
     requested_keys: set[str] = set()
     for item in selected_contexts:
         for sub_item in item.split(","):
@@ -94,7 +107,7 @@ def filter_contexts(
             filtered[key] = available_contexts[key]
         else:
             typer.echo(
-                f"Warning: Context '{key}' not found. Available: {', '.join(available_contexts.keys())}",
+                f"Warning: Context '{key}' not found. Available: {', '.join(sorted(available_contexts.keys()))}",
                 err=True,
             )
 
@@ -133,15 +146,28 @@ def print_definitions(definitions: list[BaseContext.Definition]) -> None:
 
 @app.command()
 def check_name(
-    name: Annotated[str, typer.Argument(..., help="Name to check")],
+    name: Annotated[
+        str | None,
+        typer.Argument(help="Name to check"),
+    ] = None,
     context: Annotated[
         list[str] | None,
         typer.Option(
             "-c",
             "--context",
-            help="Limit check to specific context(s) (e.g. -c python -c ruby or -c python,ruby).",
+            help="Limit check to specific context(s) (e.g. -c python -c ruby).",
         ),
     ] = None,
+    list_contexts: Annotated[
+        bool | None,
+        typer.Option(
+            "-l",
+            "--list-contexts",
+            callback=list_contexts_callback,
+            is_eager=True,
+            help="List all dynamically registered contexts and exit.",
+        ),
+    ] = False,
     version: Annotated[
         bool | None,
         typer.Option(
@@ -153,7 +179,11 @@ def check_name(
         ),
     ] = False,
 ) -> None:
-    """Check the meaning of a name in multiple contexts. Side-effects: stdout."""
+    """Check the meaning of a name in multiple contexts. Side-effects: stdout, stderr."""
+    if name is None:
+        typer.echo("Error: Missing argument 'NAME'. Use --help for usage.", err=True)
+        raise typer.Exit(code=1)
+
     results = list_definitions(str(name), selected_contexts=context)
     defined_results = [r for r in results if r.definition is not None]
 
