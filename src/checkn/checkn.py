@@ -10,8 +10,9 @@ pip install checkn
 checkn foo
 """
 
-import argparse
-import sys
+from typing import Annotated
+
+import typer
 
 from checkn import __version__
 from checkn.git_definition import GitDefinition
@@ -19,26 +20,53 @@ from checkn.python_definition import PythonDefinition
 from checkn.ruby_definition import RubyDefinition
 from checkn.shell_definition import ShellDefinition
 
+app = typer.Typer(
+    name="checkn",
+    help="Check if a name is already defined somewhere",
+    add_completion=False,
+)
 
-def main(args=sys.argv[1:]):
-    parser = argparse.ArgumentParser(
-        prog="checkn",
-        description="Check if a name is defined Python name",
-    )
-    parser.add_argument("--version", action="version", version=__version__)
-    parser.add_argument("name", help="Name to check")
-    parsed_args = parser.parse_args(args)
-    name = parsed_args.name
-    results = check_contexts(name)
+
+def version_callback(value: bool) -> None:
+    """Output application version and exit execution."""
+    if value:
+        typer.echo(__version__)
+        raise typer.Exit()
+
+
+@app.command()
+def main(
+    name: Annotated[str, typer.Argument(..., help="Name to check")],
+    version: Annotated[
+        bool | None,
+        typer.Option(
+            "-v",
+            "--version",
+            callback=version_callback,
+            is_eager=True,
+            help="Show the version and exit.",
+        ),
+    ] = False,
+) -> None:
+    """Execute name resolution check and display findings to stdout."""
+    results = check_contexts(str(name))
 
     definition_count = 0
     for info in results:
         if info.definition is not None:
-            print(f"{info.context}: {info.definition}")
+            typer.echo(f"{info.context}: {info.definition}")
             definition_count += 1
 
     if definition_count == 0:
-        print("undefined")
+        typer.echo("undefined")
+
+
+def entry():
+    app()
+
+
+if __name__ == "__main__":
+    app()
 
 
 CONTEXTS = {
