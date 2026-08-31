@@ -5,8 +5,6 @@ Dynamic shell context evaluator.
 from pathlib import Path
 
 from checkn.contexts.base_check import BaseCheck
-
-# Correctly segmented imports mapping to independent files
 from checkn.contexts.base_context import BaseContext
 from checkn.utils.discovery import load_checks
 
@@ -42,14 +40,13 @@ class ShellContext(BaseContext):
     @property
     def info(self) -> BaseContext.Definition:
         """
-        Execute registered checks to determine shell definition.
+        Execute registered checks to determine shell definitions exhaustively.
         """
-        definition_type = None
+        definitions: list[str] = []
 
         for check_class in self._checks:
             result = check_class().evaluate(self.name)
             if result:
-                definition_type = result
-                break
+                definitions.append(result)
 
-        return BaseContext.Definition("shell", self.name, definition_type, {})
+        return BaseContext.Definition("shell", self.name, definitions, {})

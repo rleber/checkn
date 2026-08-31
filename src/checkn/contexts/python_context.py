@@ -175,21 +175,21 @@ class PythonContext(BaseContext):
     @property
     def type(self):
         if self.is_keyword:
-            return "keyword"
+            return ["keyword"]
         elif self.is_builtin_class:
-            return "builtin class"
+            return ["builtin class"]
         elif self.is_builtin_module:
-            return "builtin module"
+            return ["builtin module"]
         elif self.is_stdlib_module:
-            return "stdlib module"
+            return ["stdlib module"]
         elif self.is_installed_module:
-            return "installed module"
+            return ["installed module"]
         elif self.is_installable_module:
-            return "installable module"
+            return ["installable module"]
         elif self.is_uninstallable_module:
-            return "uninstallable module"
+            return ["uninstallable module"]
         elif self.is_other_module:
-            return "other module"
+            return ["other module"]
         else:
             return None
 

@@ -138,10 +138,11 @@ def list_definitions(
 
 
 def print_definitions(definitions: list[BaseContext.Definition]) -> None:
-    """Print formatted non-null definition records. Side-effects: stdout."""
+    """Print formatted non-empty definition records. Side-effects: stdout."""
     for info in definitions:
-        if info.definition is not None:
-            typer.echo(f"{info.context}: {info.definition}")
+        if info.definitions:
+            defs_str = ", ".join(info.definitions)
+            typer.echo(f"{info.context}: {defs_str}")
 
 
 @app.command()
@@ -185,12 +186,14 @@ def check_name(
         raise typer.Exit(code=1)
 
     results = list_definitions(str(name), selected_contexts=context)
-    defined_results = [r for r in results if r.definition is not None]
+
+    # Filter for contexts that yielded one or more definitions
+    defined_results = [r for r in results if r.definitions]
 
     if not defined_results:
         typer.echo("undefined")
     else:
-        print_definitions(results)
+        print_definitions(defined_results)
 
 
 def entry() -> None:

@@ -13,12 +13,12 @@ class BaseContext(abc.ABC):
 
     class Definition(NamedTuple):
         """
-        Encapsulates metadata defining a matched resource.
+        Encapsulates metadata defining matched resources.
         """
 
         context: str
         name: str
-        definition: str | None
+        definitions: list[str]
         details: dict[str, Any]
 
     def __init__(self, name: str) -> None:

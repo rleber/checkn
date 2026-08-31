@@ -19,18 +19,9 @@ class BuiltinCheck(BaseCheck):
         """
         # Subprocess fallback using non-interactive shell to prevent banner interference
         quoted_name = quote(name)
-        result = run_command(["zsh", "-c", f"which {quoted_name}"])
+        result = run_command(["zsh", "-c", f"type -aw {quoted_name}"])
 
-        if result.returncode != 0:
-            return None
-
-        lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
-        if not lines:
-            return None
-
-        # Check last output line for valid executable path
-        last_line = lines[-1]
-        if "built-in" in last_line:
+        if result.returncode == 0 and f"{name}: builtin" in result.stdout:
             return "builtin"
 
         return None

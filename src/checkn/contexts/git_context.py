@@ -44,7 +44,7 @@ class GitContext(BaseContext):
     @property
     def type(self):
         if self.is_repository:
-            return "repository"
+            return ["repository"]
         else:
             return None
 

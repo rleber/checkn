@@ -18,9 +18,9 @@ class AliasCheck(BaseCheck):
         Check alias status via zsh shell evaluation.
         """
         quoted_name = quote(name)
-        result = run_command(["zsh", "-lic", f"alias {quoted_name}"])
+        result = run_command(["zsh", "-lic", f"type -aw {quoted_name}"])
 
         # Check return code AND ensure output actually contains an alias definition
-        if result.returncode == 0 and f"{name}=" in result.stdout:
+        if result.returncode == 0 and f"{name}: alias" in result.stdout:
             return "alias"
         return None

@@ -18,9 +18,9 @@ class FunctionCheck(BaseCheck):
         Check function definition status via zsh typeset utility.
         """
         quoted_name = quote(name)
-        result = run_command(["zsh", "-lic", f"typeset -f {quoted_name}"])
+        result = run_command(["zsh", "-lic", f"type -aw {quoted_name}"])
 
         # Ensure returncode is 0 and output contains body definition, not just startup banners
-        if result.returncode == 0 and f"{name} ()" in result.stdout:
+        if result.returncode == 0 and f"{name}: function" in result.stdout:
             return "function"
         return None

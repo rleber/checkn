@@ -96,11 +96,11 @@ class RubyContext(BaseContext):
     @property
     def type(self):
         if self.is_keyword:
-            return "keyword"
+            return ["keyword"]
         elif self.is_gem:
-            return "gem"
+            return ["gem"]
         elif self.is_builtin_class:
-            return "builtin class"
+            return ["builtin class"]
         else:
             return None
 

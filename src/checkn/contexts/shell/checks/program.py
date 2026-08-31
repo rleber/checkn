@@ -18,22 +18,12 @@ class ProgramCheck(BaseCheck):
         Check binary executable status using system PATH resolution.
         """
         quoted_name = quote(name)
-        result = run_command(["zsh", "-c", f"which {quoted_name}"])
-
-        if result.returncode != 0:
-            return None
-
-        lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
-        if not lines:
-            return None
-
-        # Check last output line for valid executable path
-        last_line = lines[-1]
+        result = run_command(["zsh", "-c", f"type -aw {quoted_name}"])
         if (
-            "not found" in last_line
-            or "reserved" in last_line
-            or "built-in" in last_line
+            result.returncode == 0
+            and f"{name}: command" in result.stdout
+            and f"{name}: builtin" not in result.stdout
         ):
-            return None
+            return "program"
 
-        return "program"
+        return None

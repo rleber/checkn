@@ -3,7 +3,7 @@ Zsh keyword definition check.
 """
 
 from checkn.contexts.base_check import BaseCheck
-from checkn.utils.shell import run_command
+from checkn.utils.shell import quote, run_command
 
 
 class ZshKeywordCheck(BaseCheck):
@@ -17,7 +17,8 @@ class ZshKeywordCheck(BaseCheck):
         """
         Check keyword status via zsh syntax parsing.
         """
-        result = run_command(["zsh", "-n", "-c", name])
-        if result.returncode != 0:
+        quoted_name = quote(name)
+        result = run_command(["zsh", "-c", f"type -aw {quoted_name}"])
+        if result.returncode == 0 and f"{name}: reserved" in result.stdout:
             return "zsh keyword"
         return None
