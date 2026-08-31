@@ -11,7 +11,6 @@ class ZshKeywordAnalysis(NameAnalysis):
     """
 
     title = "zsh keyword"
-    priority = 10
 
     def _analyze(self, name: str) -> str:
         """

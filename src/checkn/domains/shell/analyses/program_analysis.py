@@ -11,7 +11,6 @@ class ProgramAnalysis(NameAnalysis):
     """
 
     title = "program"
-    priority = 50
 
     def _analyze(self, name: str) -> str:
         """

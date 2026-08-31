@@ -19,7 +19,6 @@ class NameAnalysis(abc.ABC):
     """
 
     title: str
-    priority: int = 100
 
     def __init__(self, lab: "NameLab") -> None:
         """

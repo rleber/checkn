@@ -11,7 +11,6 @@ class AliasAnalysis(NameAnalysis):
     """
 
     title = "alias"
-    priority = 30
 
     def _analyze(self, name: str) -> str:
         """

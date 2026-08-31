@@ -11,7 +11,6 @@ class BashKeywordAnalysis(NameAnalysis):
     """
 
     title = "bash keyword"
-    priority = 20
 
     def _analyze(self, name: str) -> str:
         """
