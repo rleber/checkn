@@ -15,7 +15,6 @@ class ShellLab(NameLab):
     def __init__(self) -> None:
         """
         Discover shell NameTests.
-        Side-effects: filesystem read.
         """
         super().__init__(
             title="shell",

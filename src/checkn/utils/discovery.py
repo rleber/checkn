@@ -14,7 +14,6 @@ def discover_classes(
     """
     Discover, sort, and return classes subclassing base_class from modules in
     directory whose names end with suffix.
-    Side-effects: filesystem read.
     """
     discovered: list[type] = []
 

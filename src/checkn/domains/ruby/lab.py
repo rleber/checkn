@@ -15,7 +15,6 @@ class RubyLab(NameLab):
     def __init__(self) -> None:
         """
         Discover Ruby NameTests.
-        Side-effects: filesystem read.
         """
         super().__init__(
             title="ruby",
