@@ -7,23 +7,22 @@ import inspect
 import pkgutil
 from pathlib import Path
 
-from checkn.contexts.base_check import BaseCheck
 
-
-def load_checks(
-    checks_dir: Path, package_prefix: str, base_class: type[BaseCheck] = BaseCheck
-) -> list[type[BaseCheck]]:
+def discover_classes(
+    directory: Path, package_prefix: str, base_class: type, suffix: str
+) -> list[type]:
     """
-    Discover, sort, and return check classes from a target directory.
+    Discover, sort, and return classes subclassing base_class from modules in
+    directory whose names end with suffix.
     Side-effects: filesystem read.
     """
-    discovered: list[type[BaseCheck]] = []
+    discovered: list[type] = []
 
-    if not checks_dir.exists() or not checks_dir.is_dir():
+    if not directory.exists() or not directory.is_dir():
         return discovered
 
-    for _, module_name, _ in pkgutil.iter_modules([str(checks_dir)]):
-        if module_name.startswith("base_"):
+    for _, module_name, _ in pkgutil.iter_modules([str(directory)]):
+        if not module_name.endswith(suffix):
             continue
 
         full_module_name = f"{package_prefix}.{module_name}"
