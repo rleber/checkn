@@ -1,6 +1,6 @@
 # checkn
 
-Check if a name is a defined Python name
+Check if a name is already defined somewhere
 
 ## Description
 

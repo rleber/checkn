@@ -3,10 +3,11 @@
 """
 Check if a name is in common use (e.g. as a Python module, Ruby gem, etc.)
 
-The checks appropriate for each context (e.g. Ruby) are defined in a context
-class. Context classes are defined in files contained in the contexts directory.
-Context class definitions are dynamically loaded from those files -- so additional
-contexts may easily be defined by adding definitions to the definitions directory.
+The checks appropriate for each context (e.g. Ruby) are defined by a
+NameDomain, backed by a NameLab of NameTests and its own NameAnalyses.
+Domains live in subdirectories of the domains directory and are dynamically
+loaded from there -- so additional domains may easily be defined by adding
+a new subdirectory.
 
 usage:
 pip install checkn
@@ -19,20 +20,29 @@ from __future__ import annotations
 
 import importlib
 import inspect
-import pkgutil
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, NamedTuple
 
 import typer
 
 from checkn import __version__
-from checkn.contexts.base_context import BaseContext
+from checkn.core.name_domain import NameDomain
 
 app = typer.Typer(
     name="checkn",
     help="Check if a name is already defined somewhere",
     add_completion=False,
 )
+
+
+class DomainResult(NamedTuple):
+    """
+    Encapsulates the non-empty definitions a domain found for a name.
+    """
+
+    domain: str
+    name: str
+    definitions: list[str]
 
 
 def version_callback(value: bool) -> None:
@@ -42,33 +52,32 @@ def version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-def list_contexts_callback(value: bool) -> None:
-    """List all available contexts and exit execution. Side-effects: stdout, sys.exit."""
+def list_domains_callback(value: bool) -> None:
+    """List all available domains and exit execution. Side-effects: stdout, sys.exit."""
     if value:
-        contexts = get_contexts()
-        if not contexts:
-            typer.echo("No contexts found.")
+        domains = get_domains()
+        if not domains:
+            typer.echo("No domains found.")
         else:
-            typer.echo("Available contexts:")
-            for key in sorted(contexts.keys()):
+            typer.echo("Available domains:")
+            for key in sorted(domains.keys()):
                 typer.echo(f"  - {key}")
         raise typer.Exit()
 
 
-def get_contexts() -> dict[str, type[BaseContext]]:
-    """Scan the 'contexts' directory and discover context classes."""
-    contexts_dir = Path(__file__).parent / "contexts"
-    package_prefix = "checkn.contexts"
-    registry: dict[str, type[BaseContext]] = {}
+def get_domains() -> dict[str, NameDomain]:
+    """Scan the 'domains' directory and instantiate each domain's NameDomain."""
+    domains_dir = Path(__file__).parent / "domains"
+    registry: dict[str, NameDomain] = {}
 
-    if not contexts_dir.exists() or not contexts_dir.is_dir():
+    if not domains_dir.exists() or not domains_dir.is_dir():
         return registry
 
-    for _, module_name, _ in pkgutil.iter_modules([str(contexts_dir)]):
-        if module_name == "base_context":
+    for entry in sorted(domains_dir.iterdir()):
+        if not entry.is_dir() or not (entry / "domain.py").exists():
             continue
 
-        full_module_name = f"{package_prefix}.{module_name}"
+        full_module_name = f"checkn.domains.{entry.name}.domain"
         try:
             module = importlib.import_module(full_module_name)
         except ImportError:
@@ -76,72 +85,70 @@ def get_contexts() -> dict[str, type[BaseContext]]:
 
         for _, obj in inspect.getmembers(module, inspect.isclass):
             if (
-                issubclass(obj, BaseContext)
-                and obj is not BaseContext
+                issubclass(obj, NameDomain)
+                and obj is not NameDomain
                 and obj.__module__ == full_module_name
             ):
-                context_key = obj.__name__.removesuffix("Context").lower()
-                registry[context_key] = obj
+                domain_key = obj.__name__.removesuffix("Domain").lower()
+                registry[domain_key] = obj()
 
     return registry
 
 
-def filter_contexts(
-    available_contexts: dict[str, type[BaseContext]],
-    selected_contexts: list[str] | None,
-) -> dict[str, type[BaseContext]]:
-    """Filter context registry against user-requested context keys. Side-effects: stderr."""
-    if not selected_contexts:
-        return available_contexts
+def filter_domains(
+    available_domains: dict[str, NameDomain],
+    selected_domains: list[str] | None,
+) -> dict[str, NameDomain]:
+    """Filter domain registry against user-requested domain keys. Side-effects: stderr."""
+    if not selected_domains:
+        return available_domains
 
     requested_keys: set[str] = set()
-    for item in selected_contexts:
+    for item in selected_domains:
         for sub_item in item.split(","):
             cleaned = sub_item.strip().lower()
             if cleaned:
                 requested_keys.add(cleaned)
 
-    filtered: dict[str, type[BaseContext]] = {}
+    filtered: dict[str, NameDomain] = {}
     for key in requested_keys:
-        if key in available_contexts:
-            filtered[key] = available_contexts[key]
+        if key in available_domains:
+            filtered[key] = available_domains[key]
         else:
             typer.echo(
-                f"Warning: Context '{key}' not found. Available: {', '.join(sorted(available_contexts.keys()))}",
+                f"Warning: Domain '{key}' not found. Available: {', '.join(sorted(available_domains.keys()))}",
                 err=True,
             )
 
     return filtered
 
 
-def check_context(
-    context_class: type[BaseContext], name: str
-) -> BaseContext.Definition:
-    """Check the meaning of a name in a single context."""
-    return context_class(name).info
+def check_domain(domain: NameDomain, name: str) -> DomainResult:
+    """Check the meaning of a name in a single domain."""
+    definitions = [result for result in domain.execute_all(name).values() if result]
+    return DomainResult(domain.title, name, definitions)
 
 
-def check_contexts(
-    contexts: dict[str, type[BaseContext]], name: str
-) -> list[BaseContext.Definition]:
-    """Check the meaning of a name in multiple single contexts."""
-    return [check_context(cls, name) for cls in contexts.values()]
+def check_domains(domains: dict[str, NameDomain], name: str) -> list[DomainResult]:
+    """Check the meaning of a name across multiple domains."""
+    return [check_domain(domain, name) for domain in domains.values()]
 
 
 def list_definitions(
-    name: str, selected_contexts: list[str] | None = None
-) -> list[BaseContext.Definition]:
-    """Retrieve context definitions for a given target, constrained by optional context filters."""
-    contexts = get_contexts()
-    active_contexts = filter_contexts(contexts, selected_contexts)
-    return check_contexts(active_contexts, str(name))
+    name: str, selected_domains: list[str] | None = None
+) -> list[DomainResult]:
+    """Retrieve domain definitions for a given target, constrained by optional domain filters."""
+    domains = get_domains()
+    active_domains = filter_domains(domains, selected_domains)
+    return check_domains(active_domains, str(name))
 
 
-def print_definitions(definitions: list[BaseContext.Definition]) -> None:
-    """Print formatted non-null definition records. Side-effects: stdout."""
+def print_definitions(definitions: list[DomainResult]) -> None:
+    """Print formatted non-empty definition records. Side-effects: stdout."""
     for info in definitions:
-        if info.definition is not None:
-            typer.echo(f"{info.context}: {info.definition}")
+        if info.definitions:
+            defs_str = ", ".join(info.definitions)
+            typer.echo(f"{info.domain}: {defs_str}")
 
 
 @app.command()
@@ -150,22 +157,22 @@ def check_name(
         str | None,
         typer.Argument(help="Name to check"),
     ] = None,
-    context: Annotated[
+    domain: Annotated[
         list[str] | None,
         typer.Option(
             "-c",
-            "--context",
-            help="Limit check to specific context(s) (e.g. -c python -c ruby).",
+            "--domain",
+            help="Limit check to specific domain(s) (e.g. -c python -c ruby).",
         ),
     ] = None,
-    list_contexts: Annotated[
+    list_domains: Annotated[
         bool | None,
         typer.Option(
             "-l",
-            "--list-contexts",
-            callback=list_contexts_callback,
+            "--list-domains",
+            callback=list_domains_callback,
             is_eager=True,
-            help="List all dynamically registered contexts and exit.",
+            help="List all dynamically registered domains and exit.",
         ),
     ] = False,
     version: Annotated[
@@ -179,18 +186,20 @@ def check_name(
         ),
     ] = False,
 ) -> None:
-    """Check the meaning of a name in multiple contexts. Side-effects: stdout, stderr."""
+    """Check the meaning of a name in multiple domains. Side-effects: stdout, stderr."""
     if name is None:
         typer.echo("Error: Missing argument 'NAME'. Use --help for usage.", err=True)
         raise typer.Exit(code=1)
 
-    results = list_definitions(str(name), selected_contexts=context)
-    defined_results = [r for r in results if r.definition is not None]
+    results = list_definitions(str(name), selected_domains=domain)
+
+    # Filter for domains that yielded one or more definitions
+    defined_results = [r for r in results if r.definitions]
 
     if not defined_results:
         typer.echo("undefined")
     else:
-        print_definitions(results)
+        print_definitions(defined_results)
 
 
 def entry() -> None:
