@@ -11,7 +11,6 @@ class FunctionAnalysis(NameAnalysis):
     """
 
     title = "function"
-    priority = 30
 
     def _analyze(self, name: str) -> str:
         """

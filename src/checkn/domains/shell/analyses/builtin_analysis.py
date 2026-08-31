@@ -11,7 +11,6 @@ class BuiltinAnalysis(NameAnalysis):
     """
 
     title = "builtin"
-    priority = 40
 
     def _analyze(self, name: str) -> str:
         """

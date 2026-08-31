@@ -12,7 +12,7 @@ def discover_classes(
     directory: Path, package_prefix: str, base_class: type, suffix: str
 ) -> list[type]:
     """
-    Discover, sort, and return classes subclassing base_class from modules in
+    Discover and return classes subclassing base_class from modules in
     directory whose names end with suffix.
     """
     discovered: list[type] = []
@@ -38,5 +38,4 @@ def discover_classes(
             ):
                 discovered.append(obj)
 
-    discovered.sort(key=lambda c: c.priority)
     return discovered
