@@ -16,7 +16,6 @@ class ShellDomain(NameDomain):
     def __init__(self) -> None:
         """
         Discover shell NameAnalyses, backed by the shell NameLab.
-        Side-effects: filesystem read.
         """
         super().__init__(
             title="shell",

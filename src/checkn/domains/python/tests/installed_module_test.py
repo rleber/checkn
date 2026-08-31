@@ -17,7 +17,6 @@ class InstalledModuleTest(NameTest):
     def _perform(self, name: str) -> str:
         """
         Test membership among installed distribution metadata names.
-        Side-effects: filesystem read.
         """
         installed = [pkg.metadata["Name"] for pkg in metadata.distributions()]
         return name if name in installed else ""

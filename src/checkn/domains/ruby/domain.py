@@ -16,7 +16,6 @@ class RubyDomain(NameDomain):
     def __init__(self) -> None:
         """
         Discover Ruby NameAnalyses, backed by the Ruby NameLab.
-        Side-effects: filesystem read.
         """
         super().__init__(
             title="ruby",

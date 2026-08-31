@@ -15,7 +15,6 @@ class GitLab(NameLab):
     def __init__(self) -> None:
         """
         Discover Git NameTests.
-        Side-effects: filesystem read.
         """
         super().__init__(
             title="git",

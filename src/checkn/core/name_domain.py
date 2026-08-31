@@ -23,7 +23,6 @@ class NameDomain(NameManager):
     def __init__(self, title: str, path: Path, package_prefix: str, lab: NameLab) -> None:
         """
         Store the NameLab before discovery, since analyses are constructed with it.
-        Side-effects: filesystem read (via discovery).
         """
         if getattr(self, "_initialized", False):
             return

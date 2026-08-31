@@ -35,7 +35,6 @@ class NameManager(abc.ABC):
     def __init__(self, title: str, path: Path, package_prefix: str) -> None:
         """
         Discover and register items, unless this cached instance already has been.
-        Side-effects: filesystem read (via discovery).
         """
         if getattr(self, "_initialized", False):
             return
@@ -55,7 +54,6 @@ class NameManager(abc.ABC):
     def _discover(self) -> dict[str, Any]:
         """
         Discover, instantiate, and register items keyed by their title.
-        Side-effects: filesystem read.
         """
         classes = discover_classes(
             self._path, self._package_prefix, self._item_base_class, self._file_suffix

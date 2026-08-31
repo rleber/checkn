@@ -16,7 +16,6 @@ class PythonDomain(NameDomain):
     def __init__(self) -> None:
         """
         Discover Python NameAnalyses, backed by the Python NameLab.
-        Side-effects: filesystem read.
         """
         super().__init__(
             title="python",

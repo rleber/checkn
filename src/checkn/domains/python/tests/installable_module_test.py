@@ -17,7 +17,6 @@ class InstallableModuleTest(NameTest):
     def _perform(self, name: str) -> str:
         """
         Test membership among modules discoverable via pkgutil.
-        Side-effects: filesystem read.
         """
         installable = [module.name for module in pkgutil.iter_modules()]
         return name if name in installable else ""

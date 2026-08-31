@@ -15,7 +15,6 @@ class PythonLab(NameLab):
     def __init__(self) -> None:
         """
         Discover Python NameTests.
-        Side-effects: filesystem read.
         """
         super().__init__(
             title="python",

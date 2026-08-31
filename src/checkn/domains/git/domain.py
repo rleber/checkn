@@ -16,7 +16,6 @@ class GitDomain(NameDomain):
     def __init__(self) -> None:
         """
         Discover Git NameAnalyses, backed by the Git NameLab.
-        Side-effects: filesystem read.
         """
         super().__init__(
             title="git",
