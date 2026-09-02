@@ -17,8 +17,9 @@ readme = "README.md"
 requires-python = ">=3.12"
 dynamic = ["version", "dependencies"]
 
-[project.scripts] 
+[project.scripts]
 checkn = "checkn.cli:entry"
+checkn-cache = "checkn.cache_cli:entry"
 
 # [project.urls] # TODO Complete or remove
 # Homepage = "url"

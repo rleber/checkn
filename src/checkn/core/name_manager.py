@@ -73,6 +73,12 @@ class NameManager(abc.ABC):
         """
         return list(self._registry.keys())
 
+    def item(self, title: str) -> Any:
+        """
+        Retrieve the registered item for title, without running it.
+        """
+        return self._registry[title]
+
     def execute(self, title: str, name: str) -> str:
         """
         Run the item matching title against name.

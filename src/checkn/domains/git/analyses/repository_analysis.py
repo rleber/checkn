@@ -14,8 +14,8 @@ class RepositoryAnalysis(NameAnalysis):
 
     def _analyze(self, name: str) -> str:
         """
-        Inspect the cached `git ls-remote` result.
+        Inspect the cached repository list.
         """
-        if self.lab.execute("ls-remote", name):
+        if self.lab.execute("repositories", name):
             return "repository"
         return ""

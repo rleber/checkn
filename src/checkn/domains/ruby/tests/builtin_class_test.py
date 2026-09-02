@@ -2,32 +2,31 @@
 Ruby builtin class membership probe.
 """
 
-import subprocess
-
-from checkn.core.name_test import NameTest
+from checkn.core.cacheable_test import CacheableNameTest
 from checkn.utils.case_conversion import upper_camel_case
+from checkn.utils.shell import run_command
 
 
-class BuiltinClassTest(NameTest):
+class BuiltinClassTest(CacheableNameTest):
     """
     Checks whether the target name is a builtin Ruby class/module.
     """
 
     title = "builtin class"
+    domain = "ruby"
 
-    def _perform(self, name: str) -> str:
+    def _cache_key(self, name: str) -> str:
         """
-        Test class existence via a Ruby subprocess.
+        Ruby class names are UpperCamelCase.
         """
-        class_name = upper_camel_case(name)
-        ruby_script = f'"puts Module.const_defined?(\\"{class_name}\\").inspect"'
-        result = subprocess.run(
-            [f"ruby -e {ruby_script}"],
-            shell=True,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode == 0 and result.stdout == "true\n":
-            return name
-        return ""
+        return upper_camel_case(name)
+
+    def _fetch_all(self) -> list[str]:
+        """
+        List every top-level constant a fresh Ruby interpreter defines.
+        Side-effects: subprocess execution.
+        """
+        result = run_command(["ruby", "-e", "puts Object.constants"])
+        if result.returncode != 0:
+            return []
+        return result.stdout.splitlines()

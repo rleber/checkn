@@ -14,9 +14,6 @@ class ZshKeywordAnalysis(NameAnalysis):
 
     def _analyze(self, name: str) -> str:
         """
-        Inspect the cached `type -aw` result for a reserved-word marker.
+        Inspect the cached reserved-word list.
         """
-        result = self.lab.execute("type -aw", name)
-        if f"{name}: reserved" in result:
-            return "zsh keyword"
-        return ""
+        return "zsh keyword" if self.lab.execute("zsh keyword", name) else ""
