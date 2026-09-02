@@ -26,7 +26,15 @@ class CacheableNameTest(NameTest):
         cache = CacheDB()
         if not cache.is_loaded(self.domain, self.title):
             self.reload(cache)
-        return name if cache.contains(self.domain, self.title, name) else ""
+        return name if cache.contains(self.domain, self.title, self._cache_key(name)) else ""
+
+    def _cache_key(self, name: str) -> str:
+        """
+        Normalize name into the form used as a cache lookup key. Override
+        when the fetched name set uses a different convention than the raw
+        input (e.g. case conversion).
+        """
+        return name
 
     def reload(self, cache: CacheDB | None = None) -> None:
         """
