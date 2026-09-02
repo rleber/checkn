@@ -26,6 +26,7 @@ from __future__ import annotations
 import statistics
 import subprocess
 import time
+from datetime import datetime
 from typing import Annotated
 
 import typer
@@ -93,6 +94,8 @@ def main(
     Time `checkn <name>` for every name (repeated -r times each) and print
     per-name and aggregate timing statistics.
     """
+    run_started_at = datetime.now()
+
     durations = []
     for name in sorted(NAMES):
         for _ in range(repeat):
@@ -105,6 +108,7 @@ def main(
         print()
     print("scripts/benchmark_checkn.py")
     print("Benchmark overall execution time of checkn")
+    print(f"run at: {run_started_at.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"runs:    {len(durations)}")
     print(f"total:   {sum(durations) * 1000:,.2f} ms")
     print(f"mean:    {statistics.mean(durations) * 1000:,.2f} ms")
