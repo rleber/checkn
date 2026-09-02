@@ -85,6 +85,9 @@ def main(
     repeat: Annotated[
         int, typer.Option("-r", "--repeat", help="Runs per name.")
     ] = 1,
+    quiet: Annotated[
+        bool, typer.Option("-q", "--quiet", help="Silence per-name timing output.")
+    ] = False,
 ) -> None:
     """
     Time `checkn <name>` for every name (repeated -r times each) and print
@@ -95,7 +98,8 @@ def main(
         for _ in range(repeat):
             elapsed = time_run(name)
             durations.append(elapsed)
-            print(f"{name:<30} {elapsed * 1000:>10.2f} ms")
+            if not quiet:
+                print(f"{name:<30} {elapsed * 1000:>10.2f} ms")
 
     print()
     print(f"runs:    {len(durations)}")
