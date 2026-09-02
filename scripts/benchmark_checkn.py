@@ -70,13 +70,13 @@ NAMES = [
     "typer",
     "rich",
     "pytest",
-    # python: installable module (importable, but not the registered dist name)
+    # python: import name (importable, but not the registered dist name)
     "dotenv",
     "yaml",
     "PIL",
     "jinja2",
     "markupsafe",
-    # python: uninstallable module (real PyPI package, not installed locally)
+    # python: uninstalled module (real PyPI package, not installed locally)
     "Django",
     "Scrapy",
     "celery",
