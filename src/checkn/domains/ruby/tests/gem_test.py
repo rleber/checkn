@@ -4,21 +4,22 @@ RubyGems.org gem existence probe.
 
 import requests
 
-from checkn.core.name_test import NameTest
+from checkn.core.cacheable_test import CacheableNameTest
 
 
-class GemTest(NameTest):
+class GemTest(CacheableNameTest):
     """
     Checks whether the target name is a published gem on rubygems.org.
     """
 
     title = "gem"
+    domain = "ruby"
 
-    def _perform(self, name: str) -> str:
+    def _fetch_all(self) -> list[str]:
         """
-        Test gem page existence on rubygems.org.
+        Fetch every gem name ever published on rubygems.org.
         Side-effects: network request.
         """
-        url = f"https://rubygems.org/gems/{name}"
-        response = requests.get(url, timeout=5)
-        return name if response.status_code == 200 else ""
+        response = requests.get("https://rubygems.org/names")
+        response.raise_for_status()
+        return [line for line in response.text.splitlines() if line != "---"]
