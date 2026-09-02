@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local data directory -- keep the directory itself under version control,
+# ignore everything generated into it
+data/*
+!data/.gitkeep
