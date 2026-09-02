@@ -103,6 +103,8 @@ def main(
 
     if not quiet:
         print()
+    print("scripts/benchmark_checkn.py")
+    print("Benchmark overall execution time of checkn")
     print(f"runs:    {len(durations)}")
     print(f"total:   {sum(durations) * 1000:,.2f} ms")
     print(f"mean:    {statistics.mean(durations) * 1000:,.2f} ms")
