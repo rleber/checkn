@@ -35,40 +35,107 @@ app = typer.Typer(add_completion=False)
 
 NAMES = [
     # git: repository (owned by the current github.user)
-    "checkn", "ftype", "ripl", "lnmap", "elmer",
+    "checkn",
+    "ftype",
+    "ripl",
+    "lnmap",
+    "elmer",
     # python: keyword
-    "if", "for", "class", "import", "return",
+    "if",
+    "for",
+    "class",
+    "import",
+    "return",
     # python: builtin class
-    "int", "str", "list", "dict", "bool",
+    "int",
+    "str",
+    "list",
+    "dict",
+    "bool",
     # python: builtin module
-    "sys", "itertools", "errno", "gc", "marshal",
+    "sys",
+    "itertools",
+    "errno",
+    "gc",
+    "marshal",
     # python: stdlib module
-    "os", "json", "re", "collections", "pathlib",
+    "os",
+    "json",
+    "re",
+    "collections",
+    "pathlib",
     # python: installed module (distribution metadata name)
-    "requests", "click", "typer", "rich", "pytest",
+    "requests",
+    "click",
+    "typer",
+    "rich",
+    "pytest",
     # python: installable module (importable, but not the registered dist name)
-    "dotenv", "yaml", "PIL", "jinja2", "markupsafe",
+    "dotenv",
+    "yaml",
+    "PIL",
+    "jinja2",
+    "markupsafe",
     # python: uninstallable module (real PyPI package, not installed locally)
-    "Django", "Scrapy", "celery", "gunicorn", "uvicorn",
+    "Django",
+    "Scrapy",
+    "celery",
+    "gunicorn",
+    "uvicorn",
     # ruby: keyword
-    "module", "elsif", "unless", "begin", "yield",
+    "module",
+    "elsif",
+    "unless",
+    "begin",
+    "yield",
     # ruby: builtin class (converted via upper_camel_case)
-    "string", "array", "hash", "integer", "object",
+    "string",
+    "array",
+    "hash",
+    "integer",
+    "object",
     # ruby: gem
-    "rails", "rspec", "nokogiri", "rake", "sinatra",
+    "rails",
+    "rspec",
+    "nokogiri",
+    "rake",
+    "sinatra",
     # shell: bash keyword / zsh keyword
-    "then", "fi", "while", "done", "esac",
+    "then",
+    "fi",
+    "while",
+    "done",
+    "esac",
     # shell: builtin
-    "cd", "echo", "pwd", "read", "export",
+    "cd",
+    "echo",
+    "pwd",
+    "read",
+    "export",
     # shell: program
-    "curl", "python3", "cat", "less", "find",
+    "curl",
+    "python3",
+    "cat",
+    "less",
+    "find",
     # shell: alias (discovered via the current interactive zsh)
-    "ls", "grep", "git", "ll", "la",
+    "ls",
+    "grep",
+    "git",
+    "ll",
+    "la",
     # shell: function (discovered via the current interactive zsh)
-    "compinit", "compdef", "clipcopy", "git_prompt_status", "omz_urlencode",
+    "compinit",
+    "compdef",
+    "clipcopy",
+    "git_prompt_status",
+    "omz_urlencode",
     # not found in any domain
-    "zzqqxxnonexistentnamezz123", "qzxvbnmasdfghjklqwert99",
-    "thisisnotarealnameatall42", "xkcdfoobarbazqux77", "nonexistentnamexyz2026",
+    "zzqqxxnonexistentnamezz123",
+    "qzxvbnmasdfghjklqwert99",
+    "thisisnotarealnameatall42",
+    "xkcdfoobarbazqux77",
+    "nonexistentnamexyz2026",
 ]
 
 
@@ -83,9 +150,7 @@ def time_run(name: str) -> float:
 
 @app.command()
 def main(
-    repeat: Annotated[
-        int, typer.Option("-r", "--repeat", help="Runs per name.")
-    ] = 1,
+    repeat: Annotated[int, typer.Option("-r", "--repeat", help="Runs per name.")] = 1,
     quiet: Annotated[
         bool, typer.Option("-q", "--quiet", help="Silence per-name timing output.")
     ] = False,
@@ -110,12 +175,15 @@ def main(
     print("Benchmark overall execution time of checkn")
     print(f"run at: {run_started_at.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"runs:    {len(durations)}")
-    print(f"total:   {sum(durations) * 1000:,.2f} ms")
+    print(f"total elapsed: {sum(durations) * 1000:,.2f} ms")
+    print()
     print(f"mean:    {statistics.mean(durations) * 1000:,.2f} ms")
     print(f"median:  {statistics.median(durations) * 1000:,.2f} ms")
     print(f"min:     {min(durations) * 1000:,.2f} ms")
     print(f"max:     {max(durations) * 1000:,.2f} ms")
-    print(f"stdev:   {(statistics.stdev(durations) if len(durations) > 1 else 0.0) * 1000:,.2f} ms")
+    print(
+        f"stdev:   {(statistics.stdev(durations) if len(durations) > 1 else 0.0) * 1000:,.2f} ms"
+    )
 
 
 if __name__ == "__main__":
