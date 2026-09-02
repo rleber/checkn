@@ -14,9 +14,6 @@ class AliasAnalysis(NameAnalysis):
 
     def _analyze(self, name: str) -> str:
         """
-        Inspect the cached interactive `type -aw` result for an alias marker.
+        Inspect the cached alias list.
         """
-        result = self.lab.execute("type -aw interactive", name)
-        if f"{name}: alias" in result:
-            return "alias"
-        return ""
+        return "alias" if self.lab.execute("alias", name) else ""

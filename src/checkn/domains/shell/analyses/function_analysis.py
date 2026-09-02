@@ -14,9 +14,6 @@ class FunctionAnalysis(NameAnalysis):
 
     def _analyze(self, name: str) -> str:
         """
-        Inspect the cached interactive `type -aw` result for a function marker.
+        Inspect the cached function list.
         """
-        result = self.lab.execute("type -aw interactive", name)
-        if f"{name}: function" in result:
-            return "function"
-        return ""
+        return "function" if self.lab.execute("function", name) else ""
