@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import statistics
 import time
+from datetime import datetime
 from typing import Annotated
 
 import typer
@@ -57,6 +58,9 @@ def main(
     """
     Time every registered NameTest and print average duration, slowest first.
     """
+    run_started_at = datetime.now()
+    run_start = time.perf_counter()
+
     sample_names = names if names else SAMPLE_NAMES
 
     domains = get_domains()
@@ -76,6 +80,13 @@ def main(
 
     results.sort(key=lambda r: r[2], reverse=True)
 
+    total_elapsed = time.perf_counter() - run_start
+
+    print()
+    print("scripts/time_tests.py")
+    print("Time average execution time of tests in checkn")
+    print(f"run at: {run_started_at.strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"total elapsed: {total_elapsed * 1000:.2f} ms")
     print()
     print(f"{'domain':<10} {'test':<25} {'avg ms':>10} {'samples':>8}")
     for domain_key, title, avg_seconds, sample_count in results:
