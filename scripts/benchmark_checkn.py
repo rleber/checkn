@@ -99,17 +99,17 @@ def main(
             elapsed = time_run(name)
             durations.append(elapsed)
             if not quiet:
-                print(f"{name:<30} {elapsed * 1000:>10.2f} ms")
+                print(f"{name:<30} {elapsed * 1000:>10,.2f} ms")
 
     if not quiet:
         print()
     print(f"runs:    {len(durations)}")
-    print(f"total:   {sum(durations) * 1000:.2f} ms")
-    print(f"mean:    {statistics.mean(durations) * 1000:.2f} ms")
-    print(f"median:  {statistics.median(durations) * 1000:.2f} ms")
-    print(f"min:     {min(durations) * 1000:.2f} ms")
-    print(f"max:     {max(durations) * 1000:.2f} ms")
-    print(f"stdev:   {(statistics.stdev(durations) if len(durations) > 1 else 0.0) * 1000:.2f} ms")
+    print(f"total:   {sum(durations) * 1000:,.2f} ms")
+    print(f"mean:    {statistics.mean(durations) * 1000:,.2f} ms")
+    print(f"median:  {statistics.median(durations) * 1000:,.2f} ms")
+    print(f"min:     {min(durations) * 1000:,.2f} ms")
+    print(f"max:     {max(durations) * 1000:,.2f} ms")
+    print(f"stdev:   {(statistics.stdev(durations) if len(durations) > 1 else 0.0) * 1000:,.2f} ms")
 
 
 if __name__ == "__main__":

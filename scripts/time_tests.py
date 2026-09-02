@@ -86,11 +86,11 @@ def main(
     print("scripts/time_tests.py")
     print("Time average execution time of tests in checkn")
     print(f"run at: {run_started_at.strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"total elapsed: {total_elapsed * 1000:.2f} ms")
+    print(f"total elapsed: {total_elapsed * 1000:,.2f} ms")
     print()
     print(f"{'domain':<10} {'test':<25} {'avg ms':>10} {'samples':>8}")
     for domain_key, title, avg_seconds, sample_count in results:
-        print(f"{domain_key:<10} {title:<25} {avg_seconds * 1000:>10.2f} {sample_count:>8}")
+        print(f"{domain_key:<10} {title:<25} {avg_seconds * 1000:>10,.2f} {sample_count:>8}")
 
 
 if __name__ == "__main__":
