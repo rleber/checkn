@@ -8,15 +8,20 @@ candidates (see instructions.md).
 usage:
 python scripts/time_tests.py
 python scripts/time_tests.py -d python -d ruby
+python scripts/time_tests.py -n requests -n flask
 """
 
 from __future__ import annotations
 
-import argparse
 import statistics
 import time
+from typing import Annotated
+
+import typer
 
 from checkn.cli import get_domains
+
+app = typer.Typer(add_completion=False)
 
 SAMPLE_NAMES = ["requests", "flask", "os", "class", "print", "zzzqqqnotarealname"]
 
@@ -38,26 +43,25 @@ def time_test(execute: "callable[[str, str], str]", title: str, names: list[str]
     return durations
 
 
-def main() -> None:
+@app.command()
+def main(
+    domain: Annotated[
+        list[str] | None,
+        typer.Option("-d", "--domain", help="Limit to specific domain(s)."),
+    ] = None,
+    names: Annotated[
+        list[str] | None,
+        typer.Option("-n", "--names", help="Sample names to average over."),
+    ] = None,
+) -> None:
     """
     Time every registered NameTest and print average duration, slowest first.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "-d", "--domain", action="append", help="Limit to specific domain(s)."
-    )
-    parser.add_argument(
-        "-n",
-        "--names",
-        nargs="+",
-        default=SAMPLE_NAMES,
-        help="Sample names to average over.",
-    )
-    args = parser.parse_args()
+    sample_names = names if names else SAMPLE_NAMES
 
     domains = get_domains()
-    if args.domain:
-        requested = {d.lower() for d in args.domain}
+    if domain:
+        requested = {d.lower() for d in domain}
         domains = {k: v for k, v in domains.items() if k in requested}
 
     results = []
@@ -65,7 +69,7 @@ def main() -> None:
         lab = name_domain.lab
         for title in lab.list():
             print(f"timing {domain_key}: {title}...")
-            durations = time_test(lab.execute, title, args.names)
+            durations = time_test(lab.execute, title, sample_names)
             if not durations:
                 continue
             results.append((domain_key, title, statistics.mean(durations), len(durations)))
@@ -79,4 +83,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    app()
