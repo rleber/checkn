@@ -94,7 +94,7 @@ def main(
     per-name and aggregate timing statistics.
     """
     durations = []
-    for name in NAMES:
+    for name in sorted(NAMES):
         for _ in range(repeat):
             elapsed = time_run(name)
             durations.append(elapsed)
