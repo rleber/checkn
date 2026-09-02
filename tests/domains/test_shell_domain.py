@@ -22,6 +22,16 @@ def test_zsh_keyword():
     assert domain().execute("zsh keyword", "foo") == ""  # not special to the shell
 
 
+def test_builtin():
+    assert domain().execute("builtin", "if") == ""  # if is a zsh keyword
+    assert domain().execute("builtin", "local") == ""  # local is a zsh keyword, not a builtin
+    assert domain().execute("builtin", "gpoa") == ""  # gpoa is a shell alias
+    assert domain().execute("builtin", "cdp") == ""  # cdp is a shell function
+    assert domain().execute("builtin", "code") == ""  # code is a program
+    assert domain().execute("builtin", "cd") == "builtin"
+    assert domain().execute("builtin", "foo") == ""  # not special to the shell
+
+
 def test_bash_keyword():
     assert domain().execute("bash keyword", "if") == "bash keyword"  # if is also a bash keyword
     assert domain().execute("bash keyword", "in") == "bash keyword"

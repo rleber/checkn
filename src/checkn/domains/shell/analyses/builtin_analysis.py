@@ -14,9 +14,6 @@ class BuiltinAnalysis(NameAnalysis):
 
     def _analyze(self, name: str) -> str:
         """
-        Inspect the cached `type -aw` result for a builtin marker.
+        Inspect the cached builtin list.
         """
-        result = self.lab.execute("type -aw", name)
-        if f"{name}: builtin" in result:
-            return "builtin"
-        return ""
+        return "builtin" if self.lab.execute("builtin", name) else ""

@@ -14,9 +14,6 @@ class BashKeywordAnalysis(NameAnalysis):
 
     def _analyze(self, name: str) -> str:
         """
-        Inspect the cached bash `type` result for a keyword marker.
+        Inspect the cached bash keyword list.
         """
-        result = self.lab.execute("bash type", name)
-        if "keyword" in result:
-            return "bash keyword"
-        return ""
+        return "bash keyword" if self.lab.execute("bash keyword", name) else ""
