@@ -16,7 +16,6 @@ class BashTypeTest(NameTest):
     def _perform(self, name: str) -> str:
         """
         Resolve name via bash type inspection.
-        Side-effects: subprocess execution.
         """
         quoted_name = quote(name)
         result = run_command(["bash", "-c", f"type {quoted_name}"])

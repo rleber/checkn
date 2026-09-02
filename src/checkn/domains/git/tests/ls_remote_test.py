@@ -18,7 +18,6 @@ class LsRemoteTest(NameTest):
     def current_user(cls) -> str:
         """
         Retrieve the configured GitHub username.
-        Side-effects: subprocess execution.
         """
         result = subprocess.run(
             ["git", "config", "github.user"], capture_output=True, text=True, check=True
@@ -28,7 +27,7 @@ class LsRemoteTest(NameTest):
     def _perform(self, name: str) -> str:
         """
         Test repository existence via `git ls-remote`.
-        Side-effects: subprocess execution, network request.
+        Side-effects: network request (to github).
         """
         result = subprocess.run(
             ["git", "ls-remote", f"https://github.com/{self.current_user()}/{name}"],
