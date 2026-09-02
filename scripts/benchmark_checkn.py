@@ -101,7 +101,8 @@ def main(
             if not quiet:
                 print(f"{name:<30} {elapsed * 1000:>10.2f} ms")
 
-    print()
+    if not quiet:
+        print()
     print(f"runs:    {len(durations)}")
     print(f"total:   {sum(durations) * 1000:.2f} ms")
     print(f"mean:    {statistics.mean(durations) * 1000:.2f} ms")
