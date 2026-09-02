@@ -31,5 +31,5 @@ class TypeAnalysis(NameAnalysis):
         if lab.execute("import name", name):
             return "import name"
         if lab.execute("pypi module", name):
-            return "uninstallable module"
+            return "uninstalled module"
         return ""

@@ -11,6 +11,7 @@ Tool to check if a name is defined name:
   - A module in the standard libraries
   - A module's import name (when different from its installed package name)
   - An installed library on the current system
+  - A package published on PyPI but not installed locally
 - For Ruby
   - A builtin class
   - A gem

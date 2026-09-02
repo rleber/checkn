@@ -76,7 +76,7 @@ NAMES = [
     "PIL",
     "jinja2",
     "markupsafe",
-    # python: uninstallable module (real PyPI package, not installed locally)
+    # python: uninstalled module (real PyPI package, not installed locally)
     "Django",
     "Scrapy",
     "celery",
