@@ -28,8 +28,8 @@ class TypeAnalysis(NameAnalysis):
             return "stdlib module"
         if lab.execute("installed module", name):
             return "installed module"
-        if lab.execute("installable module", name):
-            return "installable module"
+        if lab.execute("import name", name):
+            return "import name"
         if lab.execute("pypi module", name):
             return "uninstallable module"
         return ""

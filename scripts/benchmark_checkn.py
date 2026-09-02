@@ -70,7 +70,7 @@ NAMES = [
     "typer",
     "rich",
     "pytest",
-    # python: installable module (importable, but not the registered dist name)
+    # python: import name (importable, but not the registered dist name)
     "dotenv",
     "yaml",
     "PIL",

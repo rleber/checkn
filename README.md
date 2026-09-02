@@ -9,7 +9,7 @@ Tool to check if a name is defined name:
   - A builtin class
   - A builtin module
   - A module in the standard libraries
-  - An installable library
+  - A module's import name (when different from its installed package name)
   - An installed library on the current system
 - For Ruby
   - A builtin class

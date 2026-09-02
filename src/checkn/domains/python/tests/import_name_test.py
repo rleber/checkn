@@ -1,5 +1,5 @@
 """
-Installable Python module membership probe.
+Python import-name membership probe.
 """
 
 import pkgutil
@@ -7,16 +7,16 @@ import pkgutil
 from checkn.core.name_test import NameTest
 
 
-class InstallableModuleTest(NameTest):
+class ImportNameTest(NameTest):
     """
     Checks whether the target name is an importable module on sys.path.
     """
 
-    title = "installable module"
+    title = "import name"
 
     def _perform(self, name: str) -> str:
         """
         Test membership among modules discoverable via pkgutil.
         """
-        installable = [module.name for module in pkgutil.iter_modules()]
-        return name if name in installable else ""
+        importable = [module.name for module in pkgutil.iter_modules()]
+        return name if name in importable else ""
