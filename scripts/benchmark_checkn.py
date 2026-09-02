@@ -23,10 +23,14 @@ python scripts/benchmark_checkn.py -r 3
 
 from __future__ import annotations
 
-import argparse
 import statistics
 import subprocess
 import time
+from typing import Annotated
+
+import typer
+
+app = typer.Typer(add_completion=False)
 
 NAMES = [
     # git: repository (owned by the current github.user)
@@ -76,20 +80,19 @@ def time_run(name: str) -> float:
     return time.perf_counter() - start
 
 
-def main() -> None:
+@app.command()
+def main(
+    repeat: Annotated[
+        int, typer.Option("-r", "--repeat", help="Runs per name.")
+    ] = 1,
+) -> None:
     """
     Time `checkn <name>` for every name (repeated -r times each) and print
     per-name and aggregate timing statistics.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "-r", "--repeat", type=int, default=1, help="Runs per name (default: 1)."
-    )
-    args = parser.parse_args()
-
     durations = []
     for name in NAMES:
-        for _ in range(args.repeat):
+        for _ in range(repeat):
             elapsed = time_run(name)
             durations.append(elapsed)
             print(f"{name:<30} {elapsed * 1000:>10.2f} ms")
@@ -104,4 +107,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    app()
