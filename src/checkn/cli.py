@@ -160,7 +160,7 @@ def check_name(
     domain: Annotated[
         list[str] | None,
         typer.Option(
-            "-c",
+            "-d",
             "--domain",
             help="Limit check to specific domain(s) (e.g. -c python -c ruby).",
         ),

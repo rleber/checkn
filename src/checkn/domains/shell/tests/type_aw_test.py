@@ -16,7 +16,6 @@ class TypeAwTest(NameTest):
     def _perform(self, name: str) -> str:
         """
         Resolve name via non-interactive zsh PATH/builtin/keyword resolution.
-        Side-effects: subprocess execution.
         """
         quoted_name = quote(name)
         result = run_command(["zsh", "-c", f"type -aw {quoted_name}"])

@@ -18,7 +18,6 @@ class BuiltinClassTest(NameTest):
     def _perform(self, name: str) -> str:
         """
         Test class existence via a Ruby subprocess.
-        Side-effects: subprocess execution.
         """
         class_name = upper_camel_case(name)
         ruby_script = f'"puts Module.const_defined?(\\"{class_name}\\").inspect"'

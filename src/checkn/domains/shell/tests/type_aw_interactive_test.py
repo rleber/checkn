@@ -17,7 +17,6 @@ class TypeAwInteractiveTest(NameTest):
     def _perform(self, name: str) -> str:
         """
         Resolve name via interactive zsh, exposing aliases and functions.
-        Side-effects: subprocess execution.
         """
         quoted_name = quote(name)
         result = run_command(["zsh", "-lic", f"type -aw {quoted_name}"])
