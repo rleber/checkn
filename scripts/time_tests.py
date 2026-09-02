@@ -54,6 +54,9 @@ def main(
         list[str] | None,
         typer.Option("-n", "--names", help="Sample names to average over."),
     ] = None,
+    quiet: Annotated[
+        bool, typer.Option("-q", "--quiet", help="Silence per-test timing output.")
+    ] = False,
 ) -> None:
     """
     Time every registered NameTest and print average duration, slowest first.
@@ -72,7 +75,8 @@ def main(
     for domain_key, name_domain in sorted(domains.items()):
         lab = name_domain.lab
         for title in lab.list():
-            print(f"timing {domain_key}: {title}...")
+            if not quiet:
+                print(f"timing {domain_key}: {title}...")
             durations = time_test(lab.execute, title, sample_names)
             if not durations:
                 continue
@@ -82,7 +86,8 @@ def main(
 
     total_elapsed = time.perf_counter() - run_start
 
-    print()
+    if not quiet:
+        print()
     print("scripts/time_tests.py")
     print("Time average execution time of tests in checkn")
     print(f"run at: {run_started_at.strftime('%Y-%m-%d %H:%M:%S')}")
