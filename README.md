@@ -46,11 +46,39 @@ src/checkn/:
 |   └ ...
 ├── core/: Defines core code, like abstract class definitions, e.g.
 │   ├── name_domain.py: The abstract base class for domain classes
+│   ├── cacheable_test.py: Base class for tests backed by the persistent cache
 │   └ ...
+├── cache.py: CacheDB, the sqlite3-backed persistent cache
+├── cache_cli.py: the checkn-cache script for cache management
 └── utils/: Contains shared classes and functions, e.g.
     ├── discovery.py: Defines the discover_classes function, which is used
     |                 by several classes to find dynamic class definitions
     └ ...
+
+## Caching
+
+Some tests are expensive (e.g. `pypi module`, which otherwise has to fetch
+and parse PyPI's entire package index on every check). Tests that fetch a
+bulk, rarely-changing result set can subclass `CacheableNameTest`
+(`core/cacheable_test.py`) instead of `NameTest`, implementing `_fetch_all`
+in place of `_perform`. The base class handles storing/looking up results
+in a single, system-wide sqlite3 cache at `~/.checkn_cache.db` (`cache.py`),
+and transparently reloads a test's section the first time it's needed.
+
+Cache management is kept separate from `checkn` itself via a second
+entrypoint, `checkn-cache`:
+
+```
+checkn-cache build            # ensure the cache exists and reload every cacheable test
+checkn-cache reload [-d ...]  # reload cacheable tests, all domains or the ones given
+checkn-cache clear [-d ...]   # delete cached rows, all domains or the ones given
+checkn-cache status [-d ...]  # entry counts and last-updated time per cached section
+checkn-cache path             # print the resolved cache database path
+```
+
+`checkn` itself only reloads a section automatically if it's never been
+loaded; keeping the cache fresh afterward (e.g. via a periodic `checkn-cache
+reload`) is up to the user.
 
 ## Getting Started
 
@@ -65,6 +93,8 @@ requests
 ### Executing program
 
 `checkn <name>`
+
+`checkn-cache --help` (cache management; see Caching above)
 
 ## Author
 

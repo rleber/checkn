@@ -4,19 +4,20 @@ PyPI package index membership probe.
 
 import requests
 
-from checkn.core.name_test import NameTest
+from checkn.core.cacheable_test import CacheableNameTest
 
 
-class PypiModuleTest(NameTest):
+class PypiModuleTest(CacheableNameTest):
     """
     Checks whether the target name is a package published on PyPI.
     """
 
     title = "pypi module"
+    domain = "python"
 
-    def _perform(self, name: str) -> str:
+    def _fetch_all(self) -> list[str]:
         """
-        Test membership in the PyPI simple package index.
+        Fetch every project name in the PyPI simple package index.
         Side-effects: network request.
         """
         url = "https://pypi.org/simple/"
@@ -26,5 +27,4 @@ class PypiModuleTest(NameTest):
         response.raise_for_status()
 
         data = response.json()
-        packages = [project["name"] for project in data.get("projects", [])]
-        return name if name in packages else ""
+        return [project["name"] for project in data.get("projects", [])]
