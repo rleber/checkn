@@ -4,10 +4,10 @@ Python standard-library module membership probe.
 
 import sys
 
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 
 
-class StandardModuleTest(NameTest):
+class StandardModuleProbe(NameProbe):
     """
     Checks whether the target name is a standard-library module.
     """

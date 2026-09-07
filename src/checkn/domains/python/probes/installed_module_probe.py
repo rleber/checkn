@@ -4,10 +4,10 @@ Installed Python distribution membership probe.
 
 from importlib import metadata
 
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 
 
-class InstalledModuleTest(NameTest):
+class InstalledModuleProbe(NameProbe):
     """
     Checks whether the target name is an installed distribution.
     """

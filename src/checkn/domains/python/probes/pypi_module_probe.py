@@ -4,10 +4,10 @@ PyPI package index membership probe.
 
 import requests
 
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 
 
-class PypiModuleTest(CacheableNameTest):
+class PypiModuleProbe(CacheableNameProbe):
     """
     Checks whether the target name is a package published on PyPI.
     """

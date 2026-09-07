@@ -2,11 +2,11 @@
 Shell alias enumeration probe.
 """
 
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 from checkn.utils.shell import run_command
 
 
-class AliasTest(CacheableNameTest):
+class AliasProbe(CacheableNameProbe):
     """
     Fetches every alias currently defined in an interactive login zsh.
     """

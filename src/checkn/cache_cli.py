@@ -20,7 +20,7 @@ import typer
 
 from checkn.cache import CacheDB
 from checkn.cli import get_domains
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 
 app = typer.Typer(
     name="checkn-cache",
@@ -34,9 +34,9 @@ DomainOption = Annotated[
 ]
 
 
-def _cacheable_tests(domains: list[str] | None) -> list[CacheableNameTest]:
+def _cacheable_probes(domains: list[str] | None) -> list[CacheableNameProbe]:
     """
-    Collect every CacheableNameTest instance across all domains, or only the
+    Collect every CacheableNameProbe instance across all domains, or only the
     requested ones.
     """
     all_domains = get_domains()
@@ -44,40 +44,40 @@ def _cacheable_tests(domains: list[str] | None) -> list[CacheableNameTest]:
         requested = {d.lower() for d in domains}
         all_domains = {k: v for k, v in all_domains.items() if k in requested}
 
-    tests = []
+    probes = []
     for name_domain in all_domains.values():
         lab = name_domain.lab
         for title in lab.list():
             item = lab.item(title)
-            if isinstance(item, CacheableNameTest):
-                tests.append(item)
-    return tests
+            if isinstance(item, CacheableNameProbe):
+                probes.append(item)
+    return probes
 
 
 @app.command()
 def build() -> None:
     """
-    Ensure the cache schema exists and reload every cacheable test.
+    Ensure the cache schema exists and reload every cacheable probe.
     """
     cache = CacheDB()
-    for test in _cacheable_tests(domains=None):
-        print(f"reloading {test.domain}: {test.title}...")
-        test.reload(cache)
+    for probe in _cacheable_probes(domains=None):
+        print(f"reloading {probe.domain}: {probe.title}...")
+        probe.reload(cache)
 
 
 @app.command()
 def reload(domain: DomainOption = None) -> None:
     """
-    Reload cacheable tests, for all domains or only the ones given.
+    Reload cacheable probes, for all domains or only the ones given.
     """
     cache = CacheDB()
-    tests = _cacheable_tests(domain)
-    if not tests:
-        print("No cacheable tests match.")
+    probes = _cacheable_probes(domain)
+    if not probes:
+        print("No cacheable probes match.")
         raise typer.Exit(code=1)
-    for test in tests:
-        print(f"reloading {test.domain}: {test.title}...")
-        test.reload(cache)
+    for probe in probes:
+        print(f"reloading {probe.domain}: {probe.title}...")
+        probe.reload(cache)
 
 
 @app.command()
@@ -108,9 +108,9 @@ def status(domain: DomainOption = None) -> None:
         print("No cache sections loaded.")
         return
 
-    print(f"{'domain':<10} {'test':<20} {'entries':>10}  updated_at (UTC)")
+    print(f"{'domain':<10} {'probe':<20} {'entries':>10}  updated_at (UTC)")
     for row in rows:
-        print(f"{row.domain:<10} {row.test:<20} {row.entry_count:>10,}  {row.updated_at}")
+        print(f"{row.domain:<10} {row.probe:<20} {row.entry_count:>10,}  {row.updated_at}")
 
 
 @app.command()

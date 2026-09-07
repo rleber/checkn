@@ -9,15 +9,15 @@ from checkn.core.name_lab import NameLab
 
 class RubyLab(NameLab):
     """
-    Registers the Ruby domain's NameTest classes.
+    Registers the Ruby domain's NameProbe classes.
     """
 
     def __init__(self) -> None:
         """
-        Discover Ruby NameTests.
+        Discover Ruby NameProbes.
         """
         super().__init__(
             title="ruby",
-            path=Path(__file__).parent / "tests",
-            package_prefix="checkn.domains.ruby.tests",
+            path=Path(__file__).parent / "probes",
+            package_prefix="checkn.domains.ruby.probes",
         )

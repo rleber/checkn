@@ -1,7 +1,7 @@
 """
-Base interface for dynamically loaded NameTest classes.
+Base interface for dynamically loaded NameProbe classes.
 
-A NameTest performs one raw, cacheable probe of a name (e.g. running
+A NameProbe performs one raw, cacheable probe of a name (e.g. running
 `type -aw <name>` in a shell) and returns the result as a string. It does
 not interpret the result -- that is the job of a NameAnalysis. By
 convention, an empty string means "no match"; any non-empty string means
@@ -11,7 +11,7 @@ convention, an empty string means "no match"; any non-empty string means
 import abc
 
 
-class NameTest(abc.ABC):
+class NameProbe(abc.ABC):
     """
     Abstract base for dynamic, per-name-cached probes.
     """

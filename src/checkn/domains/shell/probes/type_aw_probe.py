@@ -2,11 +2,11 @@
 `type -aw` probe, run in a non-interactive zsh.
 """
 
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 from checkn.utils.shell import quote, run_command
 
 
-class TypeAwTest(NameTest):
+class TypeAwProbe(NameProbe):
     """
     Runs `type -aw <name>` in a non-interactive zsh and returns its output.
     """

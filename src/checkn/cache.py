@@ -1,5 +1,5 @@
 """
-Persistent sqlite3 cache for bulk NameTest results.
+Persistent sqlite3 cache for bulk NameProbe results.
 """
 
 import os
@@ -23,19 +23,19 @@ def default_cache_path() -> Path:
 @dataclass
 class CacheStatus:
     """
-    One (domain, test) cache section's status.
+    One (domain, probe) cache section's status.
     """
 
     domain: str
-    test: str
+    probe: str
     updated_at: str | None
     entry_count: int
 
 
 class CacheDB:
     """
-    Stores the full name set for each cacheable NameTest, keyed by
-    (domain, test), plus when each section was last loaded.
+    Stores the full name set for each cacheable NameProbe, keyed by
+    (domain, probe), plus when each section was last loaded.
     """
 
     def __init__(self, path: Path | None = None) -> None:
@@ -60,10 +60,10 @@ class CacheDB:
                 """
                 CREATE TABLE IF NOT EXISTS cache_status (
                     domain TEXT NOT NULL,
-                    test TEXT NOT NULL,
+                    probe TEXT NOT NULL,
                     updated_at TEXT,
                     entry_count INTEGER NOT NULL DEFAULT 0,
-                    PRIMARY KEY (domain, test)
+                    PRIMARY KEY (domain, probe)
                 )
                 """
             )
@@ -71,59 +71,59 @@ class CacheDB:
                 """
                 CREATE TABLE IF NOT EXISTS cached_names (
                     domain TEXT NOT NULL,
-                    test TEXT NOT NULL,
+                    probe TEXT NOT NULL,
                     name TEXT NOT NULL,
-                    PRIMARY KEY (domain, test, name)
+                    PRIMARY KEY (domain, probe, name)
                 )
                 """
             )
 
-    def is_loaded(self, domain: str, test: str) -> bool:
+    def is_loaded(self, domain: str, probe: str) -> bool:
         """
-        Check whether (domain, test) has ever been loaded into the cache.
-        """
-        with self._connect() as conn:
-            row = conn.execute(
-                "SELECT 1 FROM cache_status WHERE domain = ? AND test = ? AND updated_at IS NOT NULL",
-                (domain, test),
-            ).fetchone()
-        return row is not None
-
-    def contains(self, domain: str, test: str, name: str) -> bool:
-        """
-        Check whether name is present in the cached set for (domain, test).
+        Check whether (domain, probe) has ever been loaded into the cache.
         """
         with self._connect() as conn:
             row = conn.execute(
-                "SELECT 1 FROM cached_names WHERE domain = ? AND test = ? AND name = ?",
-                (domain, test, name),
+                "SELECT 1 FROM cache_status WHERE domain = ? AND probe = ? AND updated_at IS NOT NULL",
+                (domain, probe),
             ).fetchone()
         return row is not None
 
-    def replace_name_set(self, domain: str, test: str, names: Iterable[str]) -> None:
+    def contains(self, domain: str, probe: str, name: str) -> bool:
         """
-        Atomically replace the cached name set for (domain, test) and record
+        Check whether name is present in the cached set for (domain, probe).
+        """
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT 1 FROM cached_names WHERE domain = ? AND probe = ? AND name = ?",
+                (domain, probe, name),
+            ).fetchone()
+        return row is not None
+
+    def replace_name_set(self, domain: str, probe: str, names: Iterable[str]) -> None:
+        """
+        Atomically replace the cached name set for (domain, probe) and record
         the current UTC time as when it was loaded.
         """
         names = list(names)
         updated_at = datetime.now(UTC).isoformat()
         with self._connect() as conn:
             conn.execute(
-                "DELETE FROM cached_names WHERE domain = ? AND test = ?", (domain, test)
+                "DELETE FROM cached_names WHERE domain = ? AND probe = ?", (domain, probe)
             )
             conn.executemany(
-                "INSERT INTO cached_names (domain, test, name) VALUES (?, ?, ?)",
-                [(domain, test, name) for name in names],
+                "INSERT INTO cached_names (domain, probe, name) VALUES (?, ?, ?)",
+                [(domain, probe, name) for name in names],
             )
             conn.execute(
                 """
-                INSERT INTO cache_status (domain, test, updated_at, entry_count)
+                INSERT INTO cache_status (domain, probe, updated_at, entry_count)
                 VALUES (?, ?, ?, ?)
-                ON CONFLICT (domain, test) DO UPDATE SET
+                ON CONFLICT (domain, probe) DO UPDATE SET
                     updated_at = excluded.updated_at,
                     entry_count = excluded.entry_count
                 """,
-                (domain, test, updated_at, len(names)),
+                (domain, probe, updated_at, len(names)),
             )
 
     def clear(self, domain: str | None = None) -> None:
@@ -142,12 +142,12 @@ class CacheDB:
         """
         Retrieve cache status rows, either for domain or (if omitted) for every domain.
         """
-        query = "SELECT domain, test, updated_at, entry_count FROM cache_status"
+        query = "SELECT domain, probe, updated_at, entry_count FROM cache_status"
         params: tuple[str, ...] = ()
         if domain is not None:
             query += " WHERE domain = ?"
             params = (domain,)
-        query += " ORDER BY domain, test"
+        query += " ORDER BY domain, probe"
         with self._connect() as conn:
             rows = conn.execute(query, params).fetchall()
         return [CacheStatus(*row) for row in rows]

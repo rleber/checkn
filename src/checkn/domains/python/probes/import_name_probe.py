@@ -4,10 +4,10 @@ Python import-name membership probe.
 
 import pkgutil
 
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 
 
-class ImportNameTest(NameTest):
+class ImportNameProbe(NameProbe):
     """
     Checks whether the target name is an importable module on sys.path.
     """

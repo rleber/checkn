@@ -2,12 +2,12 @@
 Ruby builtin class membership probe.
 """
 
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 from checkn.utils.case_conversion import upper_camel_case
 from checkn.utils.shell import run_command
 
 
-class BuiltinClassTest(CacheableNameTest):
+class BuiltinClassProbe(CacheableNameProbe):
     """
     Checks whether the target name is a builtin Ruby class/module.
     """

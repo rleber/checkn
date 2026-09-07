@@ -2,11 +2,11 @@
 Zsh builtin command enumeration probe.
 """
 
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 from checkn.utils.shell import run_command
 
 
-class BuiltinTest(CacheableNameTest):
+class BuiltinProbe(CacheableNameProbe):
     """
     Fetches every builtin command in zsh, excluding names zsh also treats
     as reserved words (e.g. `local`, `export`) -- `type -aw` classifies

@@ -2,10 +2,10 @@
 Ruby keyword membership probe.
 """
 
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 
 
-class KeywordTest(NameTest):
+class KeywordProbe(NameProbe):
     """
     Checks whether the target name is a reserved Ruby keyword.
     """

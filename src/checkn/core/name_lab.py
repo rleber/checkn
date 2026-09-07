@@ -1,22 +1,22 @@
 """
-NameLab: a registry of NameTest objects discovered from a directory.
+NameLab: a registry of NameProbe objects discovered from a directory.
 """
 
 from checkn.core.name_manager import NameManager
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 
 
 class NameLab(NameManager):
     """
-    Discovers and dispatches NameTest classes defined in files matching
-    "xxx_test.py" within its directory.
+    Discovers and dispatches NameProbe classes defined in files matching
+    "xxx_probe.py" within its directory.
     """
 
-    _file_suffix = "_test"
-    _item_base_class = NameTest
+    _file_suffix = "_probe"
+    _item_base_class = NameProbe
 
-    def _instantiate(self, item_class: type[NameTest]) -> NameTest:
+    def _instantiate(self, item_class: type[NameProbe]) -> NameProbe:
         """
-        Construct a NameTest instance.
+        Construct a NameProbe instance.
         """
         return item_class()

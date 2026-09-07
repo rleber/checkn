@@ -6,10 +6,10 @@ import os
 
 import requests
 
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 
 
-class RepositoriesTest(CacheableNameTest):
+class RepositoriesProbe(CacheableNameProbe):
     """
     Fetches every GitHub repository owned by the current user.
     """
