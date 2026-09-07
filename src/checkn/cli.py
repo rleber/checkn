@@ -162,7 +162,7 @@ def check_name(
         typer.Option(
             "-d",
             "--domain",
-            help="Limit check to specific domain(s) (e.g. -c python -c ruby).",
+            help="Limit check to specific domain(s) (e.g. -d python -d ruby).",
         ),
     ] = None,
     list_domains: Annotated[
@@ -186,7 +186,9 @@ def check_name(
         ),
     ] = False,
 ) -> None:
-    """Check the meaning of a name in multiple domains. Side-effects: stdout, stderr."""
+    """Check the meaning of a name in multiple domains.
+
+    (See `checkn-cache --help` for managing checkn's persistent cache.)"""
     if name is None:
         typer.echo("Error: Missing argument 'NAME'. Use --help for usage.", err=True)
         raise typer.Exit(code=1)
