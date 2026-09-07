@@ -4,7 +4,7 @@
 Check if a name is in common use (e.g. as a Python module, Ruby gem, etc.)
 
 The checks appropriate for each context (e.g. Ruby) are defined by a
-NameDomain, backed by a NameLab of NameTests and its own NameAnalyses.
+NameDomain, backed by a NameLab of NameProbes and its own NameAnalyses.
 Domains live in subdirectories of the domains directory and are dynamically
 loaded from there -- so additional domains may easily be defined by adding
 a new subdirectory.

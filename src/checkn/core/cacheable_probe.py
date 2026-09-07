@@ -1,16 +1,16 @@
 """
-Base interface for NameTest classes backed by a persistent, bulk-loaded cache.
+Base interface for NameProbe classes backed by a persistent, bulk-loaded cache.
 """
 
 import abc
 
 from checkn.cache import CacheDB
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 
 
-class CacheableNameTest(NameTest):
+class CacheableNameProbe(NameProbe):
     """
-    A NameTest whose full result set is fetched and cached in bulk, rather
+    A NameProbe whose full result set is fetched and cached in bulk, rather
     than probed one name at a time. Subclasses declare `domain` (their
     owning NameDomain's title) and implement `_fetch_all`; lazy reload-when-
     empty and cache lookups are handled here.
@@ -20,7 +20,7 @@ class CacheableNameTest(NameTest):
 
     def _perform(self, name: str) -> str:
         """
-        Reload the cache if this test's section has never been loaded, then
+        Reload the cache if this probe's section has never been loaded, then
         look name up in it.
         """
         cache = CacheDB()
@@ -38,7 +38,7 @@ class CacheableNameTest(NameTest):
 
     def reload(self, cache: CacheDB | None = None) -> None:
         """
-        Fetch the full name set and replace this test's cached section with it.
+        Fetch the full name set and replace this probe's cached section with it.
         """
         cache = cache or CacheDB()
         cache.replace_name_set(self.domain, self.title, self._fetch_all())
@@ -46,5 +46,5 @@ class CacheableNameTest(NameTest):
     @abc.abstractmethod
     def _fetch_all(self) -> list[str]:
         """
-        Fetch the full set of names this test should recognize.
+        Fetch the full set of names this probe should recognize.
         """

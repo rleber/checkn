@@ -5,10 +5,10 @@ Python builtin class membership probe.
 import builtins
 import inspect
 
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 
 
-class BuiltinClassTest(NameTest):
+class BuiltinClassProbe(NameProbe):
     """
     Checks whether the target name is a Python builtin class.
     """

@@ -4,10 +4,10 @@ RubyGems.org gem existence probe.
 
 import requests
 
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 
 
-class GemTest(CacheableNameTest):
+class GemProbe(CacheableNameProbe):
     """
     Checks whether the target name is a published gem on rubygems.org.
     """

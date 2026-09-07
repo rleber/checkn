@@ -27,27 +27,27 @@ Tool to check if a name is defined name:
 ## Implementation
 Checkn runs analyses in separate areas of concern (e.g. Ruby, Shell), which
 it calls domains. In each domain, there are analyses (e.g. to answer the 
-question: is this name a Shell reserved word?). Analyses are performed on the results of tests (e.g. running the `type` command in a shell). Tests are dispatched by name through the use of a helper called a "lab".
+question: is this name a Shell reserved word?). Analyses are performed on the results of probes (e.g. running the `type` command in a shell). Probes are dispatched by name through the use of a helper called a "lab".
 
-Domains, labs, analyses, and tests are dynamically defined by importing Python
+Domains, labs, analyses, and probes are dynamically defined by importing Python
 scripts within a directory structure:
 
 src/checkn/: 
 ├── cli.py: the main script that invokes domains to analyze names
 ├── domains/: Contains the definition of domains, e.g.
-|   ├── shell/: Contains the definition of the shell domain, analyses and tests
+|   ├── shell/: Contains the definition of the shell domain, analyses and probes
 |   │   ├── domain.py: Defines the domain class for the shell domain
 |   │   ├── lab.py: Defines the lab class for the shell domain
 |   │   ├── analyses/: Contains the definitions of analyses in the domain, e.g.
 |   |   │   ├── alias_analysis.py: Code to analyze: is this name a shell alias?
 |   |   │   └ ...
-|   │   └── tests/: Contains the definitions of tests in the domain, e.g.
-|   |       ├── bash_type_test.py: Code to run a `type` test in the bash shell
+|   │   └── probes/: Contains the definitions of probes in the domain, e.g.
+|   |       ├── type_aw_probe.py: Code to run a `type -aw` probe in zsh
 |   |       └ ...
 |   └ ...
 ├── core/: Defines core code, like abstract class definitions, e.g.
 │   ├── name_domain.py: The abstract base class for domain classes
-│   ├── cacheable_test.py: Base class for tests backed by the persistent cache
+│   ├── cacheable_probe.py: Base class for probes backed by the persistent cache
 │   └ ...
 ├── cache.py: CacheDB, the sqlite3-backed persistent cache
 ├── cache_cli.py: the checkn-cache script for cache management
@@ -58,20 +58,20 @@ src/checkn/:
 
 ## Caching
 
-Some tests are expensive (e.g. `pypi module`, which otherwise has to fetch
-and parse PyPI's entire package index on every check). Tests that fetch a
-bulk, rarely-changing result set can subclass `CacheableNameTest`
-(`core/cacheable_test.py`) instead of `NameTest`, implementing `_fetch_all`
+Some probes are expensive (e.g. `pypi module`, which otherwise has to fetch
+and parse PyPI's entire package index on every check). Probes that fetch a
+bulk, rarely-changing result set can subclass `CacheableNameProbe`
+(`core/cacheable_probe.py`) instead of `NameProbe`, implementing `_fetch_all`
 in place of `_perform`. The base class handles storing/looking up results
 in a single, system-wide sqlite3 cache at `~/.checkn_cache.db` (`cache.py`),
-and transparently reloads a test's section the first time it's needed.
+and transparently reloads a probe's section the first time it's needed.
 
 Cache management is kept separate from `checkn` itself via a second
 entrypoint, `checkn-cache`:
 
 ```
-checkn-cache build            # ensure the cache exists and reload every cacheable test
-checkn-cache reload [-d ...]  # reload cacheable tests, all domains or the ones given
+checkn-cache build            # ensure the cache exists and reload every cacheable probe
+checkn-cache reload [-d ...]  # reload cacheable probes, all domains or the ones given
 checkn-cache clear [-d ...]   # delete cached rows, all domains or the ones given
 checkn-cache status [-d ...]  # entry counts and last-updated time per cached section
 checkn-cache path             # print the resolved cache database path

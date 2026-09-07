@@ -2,11 +2,11 @@
 Bash reserved keyword enumeration probe.
 """
 
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 from checkn.utils.shell import run_command
 
 
-class BashKeywordTest(CacheableNameTest):
+class BashKeywordProbe(CacheableNameProbe):
     """
     Fetches every reserved keyword in bash.
     """

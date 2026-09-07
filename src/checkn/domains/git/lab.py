@@ -9,15 +9,15 @@ from checkn.core.name_lab import NameLab
 
 class GitLab(NameLab):
     """
-    Registers the Git domain's NameTest classes.
+    Registers the Git domain's NameProbe classes.
     """
 
     def __init__(self) -> None:
         """
-        Discover Git NameTests.
+        Discover Git NameProbes.
         """
         super().__init__(
             title="git",
-            path=Path(__file__).parent / "tests",
-            package_prefix="checkn.domains.git.tests",
+            path=Path(__file__).parent / "probes",
+            package_prefix="checkn.domains.git.probes",
         )

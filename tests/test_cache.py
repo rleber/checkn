@@ -47,7 +47,7 @@ def test_status_reports_entry_count_and_timestamp(tmp_path):
     rows = cache.status("python")
     assert len(rows) == 1
     assert rows[0].domain == "python"
-    assert rows[0].test == "pypi module"
+    assert rows[0].probe == "pypi module"
     assert rows[0].entry_count == 3
     assert rows[0].updated_at is not None
 

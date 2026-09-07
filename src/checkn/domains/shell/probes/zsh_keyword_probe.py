@@ -2,11 +2,11 @@
 Zsh reserved keyword enumeration probe.
 """
 
-from checkn.core.cacheable_test import CacheableNameTest
+from checkn.core.cacheable_probe import CacheableNameProbe
 from checkn.utils.shell import run_command
 
 
-class ZshKeywordTest(CacheableNameTest):
+class ZshKeywordProbe(CacheableNameProbe):
     """
     Fetches every reserved keyword in zsh.
     """

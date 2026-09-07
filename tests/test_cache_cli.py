@@ -30,7 +30,7 @@ def test_status_reports_nothing_loaded_after_clear():
 def test_reload_no_matching_domain():
     result = runner.invoke(app, ["reload", "-d", "not-a-real-domain"])
     assert result.exit_code == 1
-    assert "No cacheable tests match." in result.stdout
+    assert "No cacheable probes match." in result.stdout
 
 
 def test_reload_status_contains_and_clear_python():

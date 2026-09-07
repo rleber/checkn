@@ -4,10 +4,10 @@ Python keyword membership probe.
 
 import keyword
 
-from checkn.core.name_test import NameTest
+from checkn.core.name_probe import NameProbe
 
 
-class KeywordTest(NameTest):
+class KeywordProbe(NameProbe):
     """
     Checks whether the target name is a Python keyword.
     """

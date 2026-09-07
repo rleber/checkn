@@ -1,8 +1,8 @@
 """
 Base interface for dynamically loaded NameAnalysis classes.
 
-A NameAnalysis interprets one or more cached NameTest results (fetched
-from its NameLab by test title) and returns a classification string for
+A NameAnalysis interprets one or more cached NameProbe results (fetched
+from its NameLab by probe title) and returns a classification string for
 a name. By convention, an empty string means "no match".
 """
 
@@ -15,14 +15,14 @@ if TYPE_CHECKING:
 
 class NameAnalysis(abc.ABC):
     """
-    Abstract base for dynamic, per-name-cached analyses of NameTest results.
+    Abstract base for dynamic, per-name-cached analyses of NameProbe results.
     """
 
     title: str
 
     def __init__(self, lab: "NameLab") -> None:
         """
-        Initialize with the NameLab used to run underlying tests, and the per-name result cache.
+        Initialize with the NameLab used to run underlying probes, and the per-name result cache.
         """
         self._lab = lab
         self._cache: dict[str, str] = {}
@@ -30,7 +30,7 @@ class NameAnalysis(abc.ABC):
     @property
     def lab(self) -> "NameLab":
         """
-        Retrieve the NameLab this analysis draws test results from.
+        Retrieve the NameLab this analysis draws probe results from.
         """
         return self._lab
 
@@ -45,5 +45,5 @@ class NameAnalysis(abc.ABC):
     @abc.abstractmethod
     def _analyze(self, name: str) -> str:
         """
-        Analyze the relevant NameTest result(s) and return a classification.
+        Analyze the relevant NameProbe result(s) and return a classification.
         """
