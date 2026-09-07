@@ -6,12 +6,24 @@ Run tests on the checkn-cache CLI.
 Usage: pytest tests/test_cache_cli.py
 """
 
+from datetime import datetime
+
 from typer.testing import CliRunner
 
 from checkn.cache import CacheDB
-from checkn.cache_cli import app
+from checkn.cache_cli import _format_updated_at, app
 
 runner = CliRunner()
+
+
+def test_format_updated_at_never_loaded():
+    assert _format_updated_at(None) == "(never)"
+
+
+def test_format_updated_at_formats_in_local_time():
+    value = "2026-09-07T07:00:08.342621+00:00"
+    expected = datetime.fromisoformat(value).astimezone().strftime("%Y-%m-%d %H:%M %Z")
+    assert _format_updated_at(value) == expected
 
 
 def test_path():

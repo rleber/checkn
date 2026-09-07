@@ -14,6 +14,7 @@ checkn-cache path
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Annotated
 
 import typer
@@ -93,6 +94,15 @@ def clear(domain: DomainOption = None) -> None:
         cache.clear()
 
 
+def _format_updated_at(value: str | None) -> str:
+    """
+    Render a stored UTC ISO timestamp as a simplified, local-time string.
+    """
+    if value is None:
+        return "(never)"
+    return datetime.fromisoformat(value).astimezone().strftime("%Y-%m-%d %H:%M %Z")
+
+
 @app.command()
 def status(domain: DomainOption = None) -> None:
     """
@@ -108,9 +118,10 @@ def status(domain: DomainOption = None) -> None:
         print("No cache sections loaded.")
         return
 
-    print(f"{'domain':<10} {'probe':<20} {'entries':>10}  updated_at (UTC)")
+    print(f"{'domain':<10} {'probe':<20} {'entries':>10}  updated_at (local)")
     for row in rows:
-        print(f"{row.domain:<10} {row.probe:<20} {row.entry_count:>10,}  {row.updated_at}")
+        updated_at = _format_updated_at(row.updated_at)
+        print(f"{row.domain:<10} {row.probe:<20} {row.entry_count:>10,}  {updated_at}")
 
 
 @app.command()
