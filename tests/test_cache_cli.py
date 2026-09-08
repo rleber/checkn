@@ -12,8 +12,17 @@ from typer.testing import CliRunner
 
 from checkn.cache import CacheDB
 from checkn.cache_cli import _format_updated_at, app
+from checkn.core.cacheable_probe import CacheableNameProbe
 
 runner = CliRunner()
+
+
+class _FailingProbe(CacheableNameProbe):
+    title = "failing"
+    domain = "test"
+
+    def _fetch_all(self) -> list[str]:
+        return []
 
 
 def test_format_updated_at_never_loaded():
@@ -43,6 +52,52 @@ def test_reload_no_matching_domain():
     result = runner.invoke(app, ["reload", "-d", "not-a-real-domain"])
     assert result.exit_code == 1
     assert "No cacheable probes match." in result.stdout
+
+
+def test_build_exits_nonzero_when_a_probe_fails(monkeypatch):
+    monkeypatch.setattr("checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()])
+    result = runner.invoke(app, ["build"])
+    assert result.exit_code == 1
+    assert "0 entries" in result.stderr
+    CacheDB().clear("test")
+
+
+def test_reload_exits_nonzero_when_a_probe_fails(monkeypatch):
+    monkeypatch.setattr("checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()])
+    result = runner.invoke(app, ["reload"])
+    assert result.exit_code == 1
+    assert "0 entries" in result.stderr
+    CacheDB().clear("test")
+
+
+def test_status_highlights_failed_reload(monkeypatch):
+    monkeypatch.setattr("checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()])
+    runner.invoke(app, ["build"])
+
+    result = runner.invoke(app, ["status"])
+    assert result.exit_code == 0
+    assert "status" in result.stdout
+    assert "reload failed" in result.stdout
+
+    # warning banner comes after the table, not before
+    banner = "warning: 1 probe(s) have a failed reload pending: test failing"
+    assert banner in result.stdout
+    assert result.stdout.index(banner) > result.stdout.index("reload failed")
+
+    CacheDB().clear("test")
+
+
+def test_status_column_always_present_and_shows_okay_when_nothing_failed():
+    runner.invoke(app, ["clear"])
+    CacheDB().replace_name_set("test", "ok", ["a"])
+
+    result = runner.invoke(app, ["status"])
+    assert result.exit_code == 0
+    assert "status" in result.stdout
+    assert "okay" in result.stdout
+    assert "warning:" not in result.stdout
+
+    CacheDB().clear("test")
 
 
 def test_reload_status_contains_and_clear_python():

@@ -3,6 +3,7 @@ Base interface for NameProbe classes backed by a persistent, bulk-loaded cache.
 """
 
 import abc
+import sys
 
 from checkn.cache import CacheDB
 from checkn.core.name_probe import NameProbe
@@ -36,12 +37,29 @@ class CacheableNameProbe(NameProbe):
         """
         return name
 
-    def reload(self, cache: CacheDB | None = None) -> None:
+    def reload(self, cache: CacheDB | None = None) -> bool:
         """
-        Fetch the full name set and replace this probe's cached section with it.
+        Fetch the full name set and replace this probe's cached section with
+        it. Every probe expects a real, non-trivial result set, so an empty
+        fetch almost certainly means the underlying fetch failed (e.g. timed
+        out) rather than genuinely finding nothing -- in that case, warn on
+        stderr and leave the existing cached section untouched (stale-but-
+        correct beats silently wiping out a good cache) rather than
+        replacing it with an empty one, and return False.
         """
         cache = cache or CacheDB()
-        cache.replace_name_set(self.domain, self.title, self._fetch_all())
+        names = self._fetch_all()
+        if not names:
+            print(
+                f"warning: {self.domain}: {self.title} fetched 0 entries "
+                "(likely a failed fetch, not a genuinely empty result) -- "
+                "leaving existing cache section unchanged",
+                file=sys.stderr,
+            )
+            cache.mark_failed(self.domain, self.title)
+            return False
+        cache.replace_name_set(self.domain, self.title, names)
+        return True
 
     @abc.abstractmethod
     def _fetch_all(self) -> list[str]:

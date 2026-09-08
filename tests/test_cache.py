@@ -57,6 +57,40 @@ def test_status_empty_when_nothing_loaded(tmp_path):
     assert cache.status() == []
 
 
+def test_mark_failed_records_failure_without_prior_data(tmp_path):
+    cache = new_cache(tmp_path)
+    cache.mark_failed("python", "pypi module")
+
+    rows = cache.status("python")
+    assert len(rows) == 1
+    assert rows[0].last_failed_at is not None
+    assert rows[0].updated_at is None
+    assert rows[0].entry_count == 0
+    assert cache.is_loaded("python", "pypi module") is False
+
+
+def test_mark_failed_preserves_existing_data(tmp_path):
+    cache = new_cache(tmp_path)
+    cache.replace_name_set("python", "pypi module", ["requests", "flask"])
+
+    cache.mark_failed("python", "pypi module")
+
+    rows = cache.status("python")
+    assert rows[0].last_failed_at is not None
+    assert rows[0].entry_count == 2
+    assert cache.contains("python", "pypi module", "requests") is True
+
+
+def test_replace_name_set_clears_prior_failure(tmp_path):
+    cache = new_cache(tmp_path)
+    cache.mark_failed("python", "pypi module")
+
+    cache.replace_name_set("python", "pypi module", ["requests"])
+
+    rows = cache.status("python")
+    assert rows[0].last_failed_at is None
+
+
 def test_clear_domain_scoped(tmp_path):
     cache = new_cache(tmp_path)
     cache.replace_name_set("python", "pypi module", ["requests"])
