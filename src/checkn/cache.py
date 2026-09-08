@@ -30,12 +30,14 @@ class CacheStatus:
     probe: str
     updated_at: str | None
     entry_count: int
+    last_failed_at: str | None
 
 
 class CacheDB:
     """
     Stores the full name set for each cacheable NameProbe, keyed by
-    (domain, probe), plus when each section was last loaded.
+    (domain, probe), plus when each section was last loaded (or last failed
+    to load).
     """
 
     def __init__(self, path: Path | None = None) -> None:
@@ -63,6 +65,7 @@ class CacheDB:
                     probe TEXT NOT NULL,
                     updated_at TEXT,
                     entry_count INTEGER NOT NULL DEFAULT 0,
+                    last_failed_at TEXT,
                     PRIMARY KEY (domain, probe)
                 )
                 """
@@ -102,8 +105,9 @@ class CacheDB:
 
     def replace_name_set(self, domain: str, probe: str, names: Iterable[str]) -> None:
         """
-        Atomically replace the cached name set for (domain, probe) and record
-        the current UTC time as when it was loaded.
+        Atomically replace the cached name set for (domain, probe), record
+        the current UTC time as when it was loaded, and clear any prior
+        failure recorded for it.
         """
         names = list(names)
         updated_at = datetime.now(UTC).isoformat()
@@ -117,13 +121,31 @@ class CacheDB:
             )
             conn.execute(
                 """
-                INSERT INTO cache_status (domain, probe, updated_at, entry_count)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO cache_status (domain, probe, updated_at, entry_count, last_failed_at)
+                VALUES (?, ?, ?, ?, NULL)
                 ON CONFLICT (domain, probe) DO UPDATE SET
                     updated_at = excluded.updated_at,
-                    entry_count = excluded.entry_count
+                    entry_count = excluded.entry_count,
+                    last_failed_at = excluded.last_failed_at
                 """,
                 (domain, probe, updated_at, len(names)),
+            )
+
+    def mark_failed(self, domain: str, probe: str) -> None:
+        """
+        Record that the most recent reload attempt for (domain, probe)
+        failed, without touching any data already cached for it.
+        """
+        failed_at = datetime.now(UTC).isoformat()
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO cache_status (domain, probe, last_failed_at)
+                VALUES (?, ?, ?)
+                ON CONFLICT (domain, probe) DO UPDATE SET
+                    last_failed_at = excluded.last_failed_at
+                """,
+                (domain, probe, failed_at),
             )
 
     def clear(self, domain: str | None = None) -> None:
@@ -142,7 +164,7 @@ class CacheDB:
         """
         Retrieve cache status rows, either for domain or (if omitted) for every domain.
         """
-        query = "SELECT domain, probe, updated_at, entry_count FROM cache_status"
+        query = "SELECT domain, probe, updated_at, entry_count, last_failed_at FROM cache_status"
         params: tuple[str, ...] = ()
         if domain is not None:
             query += " WHERE domain = ?"

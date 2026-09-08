@@ -9,6 +9,10 @@
 # than appending, so this script does its own append-logging instead.
 set -euo pipefail
 
+# Read by ~/.zshrc to skip the oh-my-zsh 1password plugin's op-completion
+# regeneration, which can hang non-interactive runs waiting on a TCC prompt.
+export CHECKN_NONINTERACTIVE=1
+
 LOG_FILE="$HOME/.checkn_cache_reload.log"
 
 if [ -f "$HOME/.env" ]; then

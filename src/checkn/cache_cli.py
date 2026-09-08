@@ -58,27 +58,37 @@ def _cacheable_probes(domains: list[str] | None) -> list[CacheableNameProbe]:
 @app.command()
 def build() -> None:
     """
-    Ensure the cache schema exists and reload every cacheable probe.
+    Ensure the cache schema exists and reload every cacheable probe. Exits
+    non-zero if any probe failed, after attempting all of them.
     """
     cache = CacheDB()
+    failures = 0
     for probe in _cacheable_probes(domains=None):
         print(f"reloading {probe.domain}: {probe.title}...")
-        probe.reload(cache)
+        if not probe.reload(cache):
+            failures += 1
+    if failures:
+        raise typer.Exit(code=1)
 
 
 @app.command()
 def reload(domain: DomainOption = None) -> None:
     """
-    Reload cacheable probes, for all domains or only the ones given.
+    Reload cacheable probes, for all domains or only the ones given. Exits
+    non-zero if any probe failed, after attempting all of them.
     """
     cache = CacheDB()
     probes = _cacheable_probes(domain)
     if not probes:
         print("No cacheable probes match.")
         raise typer.Exit(code=1)
+    failures = 0
     for probe in probes:
         print(f"reloading {probe.domain}: {probe.title}...")
-        probe.reload(cache)
+        if not probe.reload(cache):
+            failures += 1
+    if failures:
+        raise typer.Exit(code=1)
 
 
 @app.command()
@@ -118,10 +128,26 @@ def status(domain: DomainOption = None) -> None:
         print("No cache sections loaded.")
         return
 
-    print(f"{'domain':<10} {'probe':<20} {'entries':>10}  updated_at (local)")
+    header = f"{'domain':<10} {'probe':<20} {'entries':>10}  {'updated_at (local)':<25}  status"
+    typer.echo(typer.style(header, fg="blue"))
+
     for row in rows:
         updated_at = _format_updated_at(row.updated_at)
-        print(f"{row.domain:<10} {row.probe:<20} {row.entry_count:>10,}  {updated_at}")
+        line = f"{row.domain:<10} {row.probe:<20} {row.entry_count:>10,}  {updated_at:<25}  "
+        if row.last_failed_at:
+            line += typer.style("reload failed", fg="red")
+        else:
+            line += typer.style("okay", fg="green")
+        typer.echo(line)
+
+    failed_rows = [row for row in rows if row.last_failed_at]
+    if failed_rows:
+        names = ", ".join(f"{row.domain} {row.probe}" for row in failed_rows)
+        print()
+        typer.secho(
+            f"warning: {len(failed_rows)} probe(s) have a failed reload pending: {names}",
+            fg="red",
+        )
 
 
 @app.command()
