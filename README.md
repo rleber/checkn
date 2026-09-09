@@ -14,7 +14,8 @@ Tool to check if a name is defined name:
   - A package published on PyPI but not installed locally
 - For Ruby
   - A builtin class
-  - A gem
+  - An installed gem
+  - A gem published on rubygems.org but not installed locally
 - For Git
   - A repository created by this user
 - For the shell

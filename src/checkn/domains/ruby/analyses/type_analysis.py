@@ -16,8 +16,9 @@ class TypeAnalysis(NameAnalysis):
         """
         Apply the Ruby classification precedence chain to the cached test results.
 
-        Builtin class is checked before gem so that the rubygems.org network
-        request is skipped whenever the name is already a known Ruby class.
+        Builtin class and installed gem are both local checks, so both are
+        tried before gem's rubygems.org network request -- which only needs
+        to run at all when neither of those already answered the question.
         """
         lab = self.lab
 
@@ -25,6 +26,8 @@ class TypeAnalysis(NameAnalysis):
             return "keyword"
         if lab.execute("builtin class", name):
             return "builtin class"
+        if lab.execute("installed gem", name):
+            return "installed gem"
         if lab.execute("gem", name):
-            return "gem"
+            return "uninstalled gem"
         return ""
