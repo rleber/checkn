@@ -16,6 +16,11 @@ Tool to check if a name is defined name:
   - A builtin class
   - An installed gem
   - A gem published on rubygems.org but not installed locally
+- For Homebrew
+  - An installed formula
+  - A formula published in homebrew-core but not installed locally
+  - An installed cask
+  - A cask published in homebrew-cask but not installed locally
 - For Git
   - A repository created by this user
 - For the shell
@@ -24,6 +29,12 @@ Tool to check if a name is defined name:
   - An alias defined on this system
   - A function defined on this system
   - A program defined on this system
+
+The "published" Homebrew checks (formula/cask, but not installed-formula/
+installed-cask) read Homebrew's own local cache of known names rather than
+querying the network. That cache is an undocumented Homebrew implementation
+detail, not a stable public API -- see `domains/homebrew/api_cache.py` for
+the specifics and how a missing or malformed cache is handled.
 
 ## Implementation
 Checkn runs analyses in separate areas of concern (e.g. Ruby, Shell), which

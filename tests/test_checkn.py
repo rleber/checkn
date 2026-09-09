@@ -39,7 +39,11 @@ def test_ruby_word():
 
 
 def test_python_and_ruby_word():
-    assert run_checkn_for("dict") == ["python: builtin class", "ruby: uninstalled gem"]
+    assert run_checkn_for("dict") == [
+        "homebrew: uninstalled formula",
+        "python: builtin class",
+        "ruby: uninstalled gem",
+    ]
 
 
 def test_python_git_and_shell_word():
