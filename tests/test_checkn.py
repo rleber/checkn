@@ -32,14 +32,14 @@ def test_undefined_word():
 
 def test_python_word():
     assert run_checkn_for("itertools") == [
-        "javascript: uninstalled module",
+        "javascript: uninstalled npm module",
         "python: builtin module",
     ]
 
 
 def test_ruby_word():
     assert run_checkn_for("sidekiq") == [
-        "javascript: uninstalled module",
+        "javascript: uninstalled npm module",
         "ruby: uninstalled gem",
     ]
 
@@ -47,7 +47,7 @@ def test_ruby_word():
 def test_python_and_ruby_word():
     assert run_checkn_for("dict") == [
         "homebrew: uninstalled formula",
-        "javascript: uninstalled module",
+        "javascript: uninstalled npm module",
         "python: builtin class",
         "ruby: uninstalled gem",
     ]
@@ -56,8 +56,8 @@ def test_python_and_ruby_word():
 def test_python_git_and_shell_word():
     assert run_checkn_for("checkn") == [
         "git: repository",
-        "javascript: uninstalled module",
-        "python: installed module",
+        "javascript: uninstalled npm module",
+        "python: installed pip module",
         "shell: program",
     ]
 
@@ -115,4 +115,4 @@ def test_checkn_entrypoint_end_to_end():
     """One real subprocess invocation, to confirm the installed console-script actually works."""
     result = subprocess.run(["checkn", "itertools"], capture_output=True, text=True)
     assert result.returncode == 0
-    assert result.stdout.strip() == "javascript: uninstalled module\npython: builtin module"
+    assert result.stdout.strip() == "javascript: uninstalled npm module\npython: builtin module"

@@ -26,11 +26,11 @@ def test_type_builtin_module():
 
 
 def test_type_installed_module():
-    assert domain().execute("type", "joplin") == "installed module"
+    assert domain().execute("type", "joplin") == "installed npm module"
 
 
 def test_type_uninstalled_module():
-    assert domain().execute("type", "express") == "uninstalled module"
+    assert domain().execute("type", "express") == "uninstalled npm module"
 
 
 def test_type_undefined():

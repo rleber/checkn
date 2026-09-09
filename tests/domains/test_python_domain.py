@@ -30,7 +30,7 @@ def test_type_stdlib_module():
 
 
 def test_type_installed_module():
-    assert domain().execute("type", "checkn") == "installed module"
+    assert domain().execute("type", "checkn") == "installed pip module"
 
 
 def test_type_undefined():

@@ -30,7 +30,7 @@ class TypeAnalysis(NameAnalysis):
         if lab.execute("builtin module", name):
             return "builtin module"
         if lab.execute("installed module", name):
-            return "installed module"
+            return "installed npm module"
         if lab.execute("npm module", name):
-            return "uninstalled module"
+            return "uninstalled npm module"
         return ""
