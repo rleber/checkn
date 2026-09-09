@@ -21,6 +21,12 @@ Tool to check if a name is defined name:
   - A formula published in homebrew-core but not installed locally
   - An installed cask
   - A cask published in homebrew-cask but not installed locally
+- For JavaScript
+  - A reserved keyword
+  - A builtin class (e.g. Array, Map, Promise)
+  - A Node.js builtin module
+  - An npm package installed globally on this system
+  - A package published on npm but not installed locally
 - For Git
   - A repository created by this user
 - For the shell
@@ -35,6 +41,12 @@ installed-cask) read Homebrew's own local cache of known names rather than
 querying the network. That cache is an undocumented Homebrew implementation
 detail, not a stable public API -- see `domains/homebrew/api_cache.py` for
 the specifics and how a missing or malformed cache is handled.
+
+The "package published on npm but not installed locally" check has no
+bulk index to cache the way its Python/Ruby/Homebrew counterparts do (npm's
+full package list runs to hundreds of megabytes), so it queries the npm
+registry live, once per check, instead -- see
+`domains/javascript/probes/npm_module_probe.py`.
 
 ## Implementation
 Checkn runs analyses in separate areas of concern (e.g. Ruby, Shell), which
