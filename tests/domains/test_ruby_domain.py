@@ -17,8 +17,8 @@ def test_type_keyword():
     assert domain().execute("type", "while") == "keyword"
 
 
-def test_type_gem():
-    assert domain().execute("type", "rails") == "gem"
+def test_type_installed_gem():
+    assert domain().execute("type", "rails") == "installed gem"
 
 
 def test_type_builtin_class():
