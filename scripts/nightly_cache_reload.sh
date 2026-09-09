@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Runs checkn's persistent cache reload. Invoked as a job by nightly_jobs
-# (~/projects/sh/nightly/nightly_jobs), which provides the timeout,
+# Runs checkn's persistent cache reload. Invoked as a job by scheduled_jobs
+# (~/projects/sh/scheduled_run/scheduled_jobs), which provides the timeout,
 # caffeinate, and logging -- see that script for those. Pulls GITHUB_TOKEN
 # (needed by the git domain's cacheable test) from ~/.env.
 set -euo pipefail
