@@ -1,19 +1,14 @@
 #!/bin/bash
 #
-# Nightly full reload of checkn's persistent cache. Run via the
-# local.checkn.cache-reload LaunchAgent; see
-# ~/Library/LaunchAgents/local.checkn.cache-reload.plist. Pulls GITHUB_TOKEN
+# Runs checkn's persistent cache reload. Invoked as a job by nightly_jobs
+# (~/projects/sh/nightly/nightly_jobs), which provides the timeout,
+# caffeinate, and logging -- see that script for those. Pulls GITHUB_TOKEN
 # (needed by the git domain's cacheable test) from ~/.env.
-#
-# launchd truncates StandardOutPath/StandardErrorPath on each run rather
-# than appending, so this script does its own append-logging instead.
 set -euo pipefail
 
 # Read by ~/.zshrc to skip the oh-my-zsh 1password plugin's op-completion
 # regeneration, which can hang non-interactive runs waiting on a TCC prompt.
 export CHECKN_NONINTERACTIVE=1
-
-LOG_FILE="$HOME/.checkn_cache_reload.log"
 
 if [ -f "$HOME/.env" ]; then
     set -a
@@ -22,8 +17,4 @@ if [ -f "$HOME/.env" ]; then
     set +a
 fi
 
-{
-    echo "=== $(date) ==="
-    /Users/richard/.venv/bin/checkn-cache build
-    echo "--- done ---"
-} >> "$LOG_FILE" 2>&1
+exec /Users/richard/.venv/bin/checkn-cache build
