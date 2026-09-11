@@ -46,6 +46,7 @@ def test_ruby_word():
 
 def test_python_and_ruby_word():
     assert run_checkn_for("dict") == [
+        "apt: uninstalled package",
         "homebrew: uninstalled formula",
         "javascript: uninstalled npm module",
         "python: builtin class",

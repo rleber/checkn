@@ -21,6 +21,10 @@ Tool to check if a name is defined name:
   - A formula published in homebrew-core but not installed locally
   - An installed cask
   - A cask published in homebrew-cask but not installed locally
+- For apt
+  - An installed package (Linux only)
+  - A package known to Debian's package archive but not installed locally
+    (works on any OS)
 - For JavaScript
   - A reserved keyword
   - A builtin class (e.g. Array, Map, Promise)
@@ -41,6 +45,13 @@ installed-cask) read Homebrew's own local cache of known names rather than
 querying the network. That cache is an undocumented Homebrew implementation
 detail, not a stable public API -- see `domains/homebrew/api_cache.py` for
 the specifics and how a missing or malformed cache is handled.
+
+The apt "installed package" check shells out to `dpkg-query` and only
+runs on Linux, where dpkg actually exists -- see `utils/os_support.py`
+for how a probe declares itself platform-restricted. The apt "package"
+check, by contrast, needs no local apt/dpkg at all: it fetches Debian's
+own published package index (`packages.debian.org/stable/allpackages`)
+over the network, so it works and can classify names on any OS.
 
 The "package published on npm but not installed locally" check has no
 bulk index to cache the way its Python/Ruby/Homebrew counterparts do (npm's
