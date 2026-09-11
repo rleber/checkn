@@ -31,13 +31,14 @@ class CacheStatus:
     updated_at: str | None
     entry_count: int
     last_failed_at: str | None
+    skip_reason: str | None
 
 
 class CacheDB:
     """
     Stores the full name set for each cacheable NameProbe, keyed by
-    (domain, probe), plus when each section was last loaded (or last failed
-    to load).
+    (domain, probe), plus when each section was last loaded, last failed
+    to load, or was last found not applicable on this system.
     """
 
     def __init__(self, path: Path | None = None) -> None:
@@ -66,6 +67,7 @@ class CacheDB:
                     updated_at TEXT,
                     entry_count INTEGER NOT NULL DEFAULT 0,
                     last_failed_at TEXT,
+                    skip_reason TEXT,
                     PRIMARY KEY (domain, probe)
                 )
                 """
@@ -107,7 +109,7 @@ class CacheDB:
         """
         Atomically replace the cached name set for (domain, probe), record
         the current UTC time as when it was loaded, and clear any prior
-        failure recorded for it.
+        failure or not-applicable marker recorded for it.
         """
         names = list(names)
         updated_at = datetime.now(UTC).isoformat()
@@ -121,12 +123,14 @@ class CacheDB:
             )
             conn.execute(
                 """
-                INSERT INTO cache_status (domain, probe, updated_at, entry_count, last_failed_at)
-                VALUES (?, ?, ?, ?, NULL)
+                INSERT INTO cache_status
+                    (domain, probe, updated_at, entry_count, last_failed_at, skip_reason)
+                VALUES (?, ?, ?, ?, NULL, NULL)
                 ON CONFLICT (domain, probe) DO UPDATE SET
                     updated_at = excluded.updated_at,
                     entry_count = excluded.entry_count,
-                    last_failed_at = excluded.last_failed_at
+                    last_failed_at = excluded.last_failed_at,
+                    skip_reason = excluded.skip_reason
                 """,
                 (domain, probe, updated_at, len(names)),
             )
@@ -134,18 +138,42 @@ class CacheDB:
     def mark_failed(self, domain: str, probe: str) -> None:
         """
         Record that the most recent reload attempt for (domain, probe)
-        failed, without touching any data already cached for it.
+        failed, without touching any data already cached for it. Clears
+        any stale not-applicable marker, since this is a genuine failure,
+        not a skip.
         """
         failed_at = datetime.now(UTC).isoformat()
         with self._connect() as conn:
             conn.execute(
                 """
-                INSERT INTO cache_status (domain, probe, last_failed_at)
-                VALUES (?, ?, ?)
+                INSERT INTO cache_status (domain, probe, last_failed_at, skip_reason)
+                VALUES (?, ?, ?, NULL)
                 ON CONFLICT (domain, probe) DO UPDATE SET
-                    last_failed_at = excluded.last_failed_at
+                    last_failed_at = excluded.last_failed_at,
+                    skip_reason = excluded.skip_reason
                 """,
                 (domain, probe, failed_at),
+            )
+
+    def mark_not_applicable(self, domain: str, probe: str, reason: str) -> None:
+        """
+        Record that (domain, probe) was skipped as not applicable on this
+        system (e.g. an unmet OS requirement), without touching any data
+        already cached for it. Distinct from mark_failed: this isn't a
+        problem to investigate, just an expected mismatch that may
+        resolve itself if checkn is ever run somewhere else.
+        """
+        checked_at = datetime.now(UTC).isoformat()
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO cache_status (domain, probe, last_failed_at, skip_reason)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT (domain, probe) DO UPDATE SET
+                    last_failed_at = excluded.last_failed_at,
+                    skip_reason = excluded.skip_reason
+                """,
+                (domain, probe, checked_at, reason),
             )
 
     def clear(self, domain: str | None = None) -> None:
@@ -164,7 +192,10 @@ class CacheDB:
         """
         Retrieve cache status rows, either for domain or (if omitted) for every domain.
         """
-        query = "SELECT domain, probe, updated_at, entry_count, last_failed_at FROM cache_status"
+        query = (
+            "SELECT domain, probe, updated_at, entry_count, last_failed_at, skip_reason "
+            "FROM cache_status"
+        )
         params: tuple[str, ...] = ()
         if domain is not None:
             query += " WHERE domain = ?"

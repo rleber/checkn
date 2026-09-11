@@ -13,6 +13,7 @@ from typer.testing import CliRunner
 from checkn.cache import CacheDB
 from checkn.cache_cli import _format_updated_at, app
 from checkn.core.cacheable_probe import CacheableNameProbe
+from checkn.utils import os_support
 
 runner = CliRunner()
 
@@ -23,6 +24,15 @@ class _FailingProbe(CacheableNameProbe):
 
     def _fetch_all(self) -> list[str]:
         return []
+
+
+class _NotApplicableProbe(CacheableNameProbe):
+    title = "unsupported"
+    domain = "test"
+    required_os = os_support.LINUX
+
+    def _fetch_all(self) -> list[str]:
+        return ["should never be reached"]
 
 
 def test_format_updated_at_never_loaded():
@@ -96,6 +106,35 @@ def test_status_column_always_present_and_shows_okay_when_nothing_failed():
     assert "status" in result.stdout
     assert "okay" in result.stdout
     assert "warning:" not in result.stdout
+
+    CacheDB().clear("test")
+
+
+def test_build_does_not_count_not_applicable_as_a_failure(monkeypatch):
+    monkeypatch.setattr(os_support, "current_os", lambda: os_support.MACOS)
+    monkeypatch.setattr(
+        "checkn.cache_cli._cacheable_probes", lambda domains: [_NotApplicableProbe()]
+    )
+    result = runner.invoke(app, ["build"])
+    assert result.exit_code == 0
+    assert "not applicable" in result.stderr
+    CacheDB().clear("test")
+
+
+def test_status_shows_not_applicable_separately_from_failures(monkeypatch):
+    monkeypatch.setattr(os_support, "current_os", lambda: os_support.MACOS)
+    monkeypatch.setattr(
+        "checkn.cache_cli._cacheable_probes", lambda domains: [_NotApplicableProbe()]
+    )
+    runner.invoke(app, ["build"])
+
+    result = runner.invoke(app, ["status"])
+    assert result.exit_code == 0
+    assert "not applicable" in result.stdout
+    assert "warning:" not in result.stdout
+
+    note = "note: 1 probe(s) not applicable on this system: test unsupported"
+    assert note in result.stdout
 
     CacheDB().clear("test")
 

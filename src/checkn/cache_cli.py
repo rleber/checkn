@@ -59,13 +59,15 @@ def _cacheable_probes(domains: list[str] | None) -> list[CacheableNameProbe]:
 def build() -> None:
     """
     Ensure the cache schema exists and reload every cacheable probe. Exits
-    non-zero if any probe failed, after attempting all of them.
+    non-zero if any probe failed, after attempting all of them. A probe
+    that's not applicable on this system (e.g. an unmet OS requirement)
+    doesn't count as a failure.
     """
     cache = CacheDB()
     failures = 0
     for probe in _cacheable_probes(domains=None):
         print(f"reloading {probe.domain}: {probe.title}...")
-        if not probe.reload(cache):
+        if probe.reload(cache) is False:
             failures += 1
     if failures:
         raise typer.Exit(code=1)
@@ -75,7 +77,9 @@ def build() -> None:
 def reload(domain: DomainOption = None) -> None:
     """
     Reload cacheable probes, for all domains or only the ones given. Exits
-    non-zero if any probe failed, after attempting all of them.
+    non-zero if any probe failed, after attempting all of them. A probe
+    that's not applicable on this system (e.g. an unmet OS requirement)
+    doesn't count as a failure.
     """
     cache = CacheDB()
     probes = _cacheable_probes(domain)
@@ -85,7 +89,7 @@ def reload(domain: DomainOption = None) -> None:
     failures = 0
     for probe in probes:
         print(f"reloading {probe.domain}: {probe.title}...")
-        if not probe.reload(cache):
+        if probe.reload(cache) is False:
             failures += 1
     if failures:
         raise typer.Exit(code=1)
@@ -134,13 +138,22 @@ def status(domain: DomainOption = None) -> None:
     for row in rows:
         updated_at = _format_updated_at(row.updated_at)
         line = f"{row.domain:<10} {row.probe:<20} {row.entry_count:>10,}  {updated_at:<25}  "
-        if row.last_failed_at:
+        if row.last_failed_at and row.skip_reason:
+            line += typer.style("not applicable", fg="yellow")
+        elif row.last_failed_at:
             line += typer.style("reload failed", fg="red")
         else:
             line += typer.style("okay", fg="green")
         typer.echo(line)
 
-    failed_rows = [row for row in rows if row.last_failed_at]
+    not_applicable_rows = [row for row in rows if row.last_failed_at and row.skip_reason]
+    failed_rows = [row for row in rows if row.last_failed_at and not row.skip_reason]
+
+    if not_applicable_rows:
+        names = ", ".join(f"{row.domain} {row.probe}" for row in not_applicable_rows)
+        print()
+        print(f"note: {len(not_applicable_rows)} probe(s) not applicable on this system: {names}")
+
     if failed_rows:
         names = ", ".join(f"{row.domain} {row.probe}" for row in failed_rows)
         print()
