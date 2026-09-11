@@ -7,6 +7,7 @@ import sys
 
 from checkn.cache import CacheDB
 from checkn.core.name_probe import NameProbe
+from checkn.utils import os_support
 
 
 class CacheableNameProbe(NameProbe):
@@ -37,17 +38,38 @@ class CacheableNameProbe(NameProbe):
         """
         return name
 
-    def reload(self, cache: CacheDB | None = None) -> bool:
+    def reload(self, cache: CacheDB | None = None) -> bool | None:
         """
         Fetch the full name set and replace this probe's cached section with
-        it. Every probe expects a real, non-trivial result set, so an empty
-        fetch almost certainly means the underlying fetch failed (e.g. timed
-        out) rather than genuinely finding nothing -- in that case, warn on
-        stderr and leave the existing cached section untouched (stale-but-
-        correct beats silently wiping out a good cache) rather than
-        replacing it with an empty one, and return False.
+        it. Returns True on success.
+
+        Returns None, without attempting the fetch at all, if this probe's
+        required_os isn't met on the current system -- e.g. an `apt`-backed
+        probe running on macOS. That's expected and not a failure: it warns
+        on stderr with its own distinct wording, records itself as "not
+        applicable" (see CacheDB.mark_not_applicable) rather than failed,
+        and leaves any existing cached section untouched. Callers should
+        not count a None return towards a failure count.
+
+        Returns False if the probe *did* attempt the fetch but it came back
+        empty. Every probe expects a real, non-trivial result set, so an
+        empty fetch almost certainly means the underlying fetch failed (e.g.
+        timed out) rather than genuinely finding nothing -- in that case,
+        warn on stderr and leave the existing cached section untouched
+        (stale-but-correct beats silently wiping out a good cache) rather
+        than replacing it with an empty one.
         """
         cache = cache or CacheDB()
+
+        if not os_support.is_supported(self.required_os):
+            reason = f"requires {self.required_os}, this system is {os_support.current_os()}"
+            print(
+                f"not applicable: {self.domain}: {self.title} ({reason}) -- skipping",
+                file=sys.stderr,
+            )
+            cache.mark_not_applicable(self.domain, self.title, reason)
+            return None
+
         names = self._fetch_all()
         if not names:
             print(

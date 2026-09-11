@@ -91,6 +91,63 @@ def test_replace_name_set_clears_prior_failure(tmp_path):
     assert rows[0].last_failed_at is None
 
 
+def test_mark_not_applicable_records_reason_without_prior_data(tmp_path):
+    cache = new_cache(tmp_path)
+    cache.mark_not_applicable("apt", "apt package", "requires linux, this system is macos")
+
+    rows = cache.status("apt")
+    assert len(rows) == 1
+    assert rows[0].last_failed_at is not None
+    assert rows[0].skip_reason == "requires linux, this system is macos"
+    assert rows[0].updated_at is None
+    assert rows[0].entry_count == 0
+    assert cache.is_loaded("apt", "apt package") is False
+
+
+def test_mark_not_applicable_preserves_existing_data(tmp_path):
+    cache = new_cache(tmp_path)
+    cache.replace_name_set("apt", "apt package", ["curl", "git"])
+
+    cache.mark_not_applicable("apt", "apt package", "requires linux")
+
+    rows = cache.status("apt")
+    assert rows[0].skip_reason == "requires linux"
+    assert rows[0].entry_count == 2
+    assert cache.contains("apt", "apt package", "curl") is True
+
+
+def test_mark_failed_clears_prior_not_applicable(tmp_path):
+    cache = new_cache(tmp_path)
+    cache.mark_not_applicable("apt", "apt package", "requires linux")
+
+    cache.mark_failed("apt", "apt package")
+
+    rows = cache.status("apt")
+    assert rows[0].last_failed_at is not None
+    assert rows[0].skip_reason is None
+
+
+def test_mark_not_applicable_clears_prior_failure_reason_state(tmp_path):
+    cache = new_cache(tmp_path)
+    cache.mark_failed("apt", "apt package")
+
+    cache.mark_not_applicable("apt", "apt package", "requires linux")
+
+    rows = cache.status("apt")
+    assert rows[0].skip_reason == "requires linux"
+
+
+def test_replace_name_set_clears_prior_not_applicable(tmp_path):
+    cache = new_cache(tmp_path)
+    cache.mark_not_applicable("apt", "apt package", "requires linux")
+
+    cache.replace_name_set("apt", "apt package", ["curl"])
+
+    rows = cache.status("apt")
+    assert rows[0].last_failed_at is None
+    assert rows[0].skip_reason is None
+
+
 def test_clear_domain_scoped(tmp_path):
     cache = new_cache(tmp_path)
     cache.replace_name_set("python", "pypi module", ["requests"])
