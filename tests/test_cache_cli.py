@@ -8,6 +8,7 @@ Usage: pytest tests/test_cache_cli.py
 
 from datetime import datetime
 
+import requests
 from typer.testing import CliRunner
 
 from checkn.cache import CacheDB
@@ -33,6 +34,14 @@ class _NotApplicableProbe(CacheableNameProbe):
 
     def _fetch_all(self) -> list[str]:
         return ["should never be reached"]
+
+
+class _OfflineProbe(CacheableNameProbe):
+    title = "offline"
+    domain = "test"
+
+    def _fetch_all(self) -> list[str]:
+        raise requests.exceptions.ConnectionError("no route to host")
 
 
 def test_format_updated_at_never_loaded():
@@ -65,7 +74,9 @@ def test_reload_no_matching_domain():
 
 
 def test_build_exits_nonzero_when_a_probe_fails(monkeypatch):
-    monkeypatch.setattr("checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()])
+    monkeypatch.setattr(
+        "checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()]
+    )
     result = runner.invoke(app, ["build"])
     assert result.exit_code == 1
     assert "0 entries" in result.stderr
@@ -73,7 +84,9 @@ def test_build_exits_nonzero_when_a_probe_fails(monkeypatch):
 
 
 def test_reload_exits_nonzero_when_a_probe_fails(monkeypatch):
-    monkeypatch.setattr("checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()])
+    monkeypatch.setattr(
+        "checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()]
+    )
     result = runner.invoke(app, ["reload"])
     assert result.exit_code == 1
     assert "0 entries" in result.stderr
@@ -81,7 +94,9 @@ def test_reload_exits_nonzero_when_a_probe_fails(monkeypatch):
 
 
 def test_status_highlights_failed_reload(monkeypatch):
-    monkeypatch.setattr("checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()])
+    monkeypatch.setattr(
+        "checkn.cache_cli._cacheable_probes", lambda domains: [_FailingProbe()]
+    )
     runner.invoke(app, ["build"])
 
     result = runner.invoke(app, ["status"])
@@ -137,6 +152,59 @@ def test_status_shows_not_applicable_separately_from_failures(monkeypatch):
     assert note in result.stdout
 
     CacheDB().clear("test")
+
+
+def test_build_does_not_count_network_unavailable_as_a_failure(monkeypatch):
+    monkeypatch.setattr(
+        "checkn.cache_cli._cacheable_probes", lambda domains: [_OfflineProbe()]
+    )
+    result = runner.invoke(app, ["build"])
+    assert result.exit_code == 0
+    assert "network unavailable" in result.stderr
+    CacheDB().clear("test")
+
+
+def test_status_shows_network_unavailable_separately_from_failures(monkeypatch):
+    monkeypatch.setattr(
+        "checkn.cache_cli._cacheable_probes", lambda domains: [_OfflineProbe()]
+    )
+    runner.invoke(app, ["build"])
+
+    result = runner.invoke(app, ["status"])
+    assert result.exit_code == 0
+    assert "network unavailable" in result.stdout
+    assert "warning:" not in result.stdout
+
+    note = "note: 1 probe(s) could not reach the network on the last reload attempt: test offline"
+    assert note in result.stdout
+
+    CacheDB().clear("test")
+
+
+def test_build_continues_past_a_probe_that_cannot_reach_the_network(monkeypatch):
+    """
+    One probe hitting a connectivity error shouldn't stop the rest of the
+    build -- e.g. an unrelated, non-network probe queued after it must
+    still run to completion in the same invocation.
+    """
+
+    class _StillRunsProbe(CacheableNameProbe):
+        title = "after-offline"
+        domain = "test"
+
+        def _fetch_all(self) -> list[str]:
+            return ["reached"]
+
+    monkeypatch.setattr(
+        "checkn.cache_cli._cacheable_probes",
+        lambda domains: [_OfflineProbe(), _StillRunsProbe()],
+    )
+    result = runner.invoke(app, ["build"])
+
+    assert result.exit_code == 0
+    cache = CacheDB()
+    assert cache.contains("test", "after-offline", "reached")
+    cache.clear("test")
 
 
 def test_reload_status_contains_and_clear_python():

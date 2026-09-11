@@ -19,7 +19,11 @@ from typing import Annotated
 
 import typer
 
-from checkn.cache import CacheDB
+from checkn.cache import (
+    SKIP_KIND_NETWORK_UNAVAILABLE,
+    SKIP_KIND_NOT_APPLICABLE,
+    CacheDB,
+)
 from checkn.cli import get_domains
 from checkn.core.cacheable_probe import CacheableNameProbe
 
@@ -138,21 +142,44 @@ def status(domain: DomainOption = None) -> None:
     for row in rows:
         updated_at = _format_updated_at(row.updated_at)
         line = f"{row.domain:<10} {row.probe:<20} {row.entry_count:>10,}  {updated_at:<25}  "
-        if row.last_failed_at and row.skip_reason:
+        if row.last_failed_at and row.skip_kind == SKIP_KIND_NOT_APPLICABLE:
             line += typer.style("not applicable", fg="yellow")
+        elif row.last_failed_at and row.skip_kind == SKIP_KIND_NETWORK_UNAVAILABLE:
+            line += typer.style("network unavailable", fg="yellow")
         elif row.last_failed_at:
             line += typer.style("reload failed", fg="red")
         else:
             line += typer.style("okay", fg="green")
         typer.echo(line)
 
-    not_applicable_rows = [row for row in rows if row.last_failed_at and row.skip_reason]
-    failed_rows = [row for row in rows if row.last_failed_at and not row.skip_reason]
+    not_applicable_rows = [
+        row
+        for row in rows
+        if row.last_failed_at and row.skip_kind == SKIP_KIND_NOT_APPLICABLE
+    ]
+    network_unavailable_rows = [
+        row
+        for row in rows
+        if row.last_failed_at and row.skip_kind == SKIP_KIND_NETWORK_UNAVAILABLE
+    ]
+    failed_rows = [row for row in rows if row.last_failed_at and not row.skip_kind]
 
     if not_applicable_rows:
         names = ", ".join(f"{row.domain} {row.probe}" for row in not_applicable_rows)
         print()
-        print(f"note: {len(not_applicable_rows)} probe(s) not applicable on this system: {names}")
+        print(
+            f"note: {len(not_applicable_rows)} probe(s) not applicable on this system: {names}"
+        )
+
+    if network_unavailable_rows:
+        names = ", ".join(
+            f"{row.domain} {row.probe}" for row in network_unavailable_rows
+        )
+        print()
+        print(
+            f"note: {len(network_unavailable_rows)} probe(s) could not reach the network "
+            f"on the last reload attempt: {names}"
+        )
 
     if failed_rows:
         names = ", ".join(f"{row.domain} {row.probe}" for row in failed_rows)

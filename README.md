@@ -116,6 +116,14 @@ checkn-cache path             # print the resolved cache database path
 loaded; keeping the cache fresh afterward (e.g. via a periodic `checkn-cache
 reload`) is up to the user.
 
+A network probe's reload can fail because the network itself is
+unreachable (e.g. no internet access at the moment a scheduled reload
+runs) rather than because of a bug. `checkn-cache status` reports that
+case as "network unavailable", distinct from a genuine "reload failed":
+it doesn't count as a failure, leaves the existing cached section
+untouched, doesn't stop any other probe's reload in the same run, and
+isn't retried -- the next scheduled reload just tries again on its own.
+
 ## Getting Started
 
 ### Dependencies
